@@ -92,6 +92,12 @@ const publishService = {
       `${invitation.data.general.name1} & ${invitation.data.general.name2}` : 
       (invitation.data?.opening?.couple || slug);
 
+    try {
+      if (invitation.data) {
+        localStorage.setItem('invitation_cache_' + slug, JSON.stringify(invitation.data));
+      }
+    } catch (e) {}
+
     const res = await fetch(`/api/invitations/${existing._dbId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },

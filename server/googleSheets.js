@@ -222,6 +222,149 @@ class GoogleSheetsDB {
       throw error;
     }
   }
+
+  // ================= INVITATIONS =================
+  // Column format: ID | Slug | UserId | TemplateId | Title | Status | ContentJSON | CreatedAt
+  async getInvitations() {
+    if (!this.initialized) await this.init();
+    if (!this.sheets) return [];
+
+    try {
+      const response = await this.sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range: 'Invitations!A2:H',
+      });
+
+      const rows = response.data.values;
+      if (!rows || rows.length === 0) return [];
+
+      return rows.map((row) => {
+        let content = {};
+        try {
+          if (row[6]) content = JSON.parse(row[6]);
+        } catch (e) {}
+
+        return {
+          id: parseInt(row[0]) || 0,
+          slug: row[1] || '',
+          user_id: parseInt(row[2]) || 0,
+          template_id: row[3] || 'luxury-gold',
+          title: row[4] || '',
+          status: row[5] || 'active',
+          content: content,
+          created_at: row[7] || new Date().toISOString()
+        };
+      });
+    } catch (error) {
+      console.error('Gagal mengambil data invitations dari Google Sheets:', error);
+      return [];
+    }
+  }
+
+  async getInvitationBySlug(slug) {
+    const invites = await this.getInvitations();
+    const clean = String(slug || '').toLowerCase().trim();
+    return invites.find(i => i.slug.toLowerCase().trim() === clean) || null;
+  }
+
+  async addInvitation(inv) {
+    if (!this.initialized) await this.init();
+    if (!this.sheets) return null;
+
+    try {
+      const invites = await this.getInvitations();
+      const nextId = invites.length > 0 ? Math.max(...invites.map(i => i.id)) + 1 : 1;
+      const createdAt = new Date().toISOString();
+      const contentStr = typeof inv.content === 'object' ? JSON.stringify(inv.content) : String(inv.content || '{}');
+
+      const values = [
+        [
+          nextId,
+          inv.slug,
+          inv.user_id || 1,
+          inv.template_id || 'luxury-gold',
+          inv.title || '',
+          inv.status || 'active',
+          contentStr,
+          createdAt
+        ]
+      ];
+
+      await this.sheets.spreadsheets.values.append({
+        spreadsheetId: SPREADSHEET_ID,
+        range: 'Invitations!A2:H',
+        valueInputOption: 'USER_ENTERED',
+        requestBody: { values },
+      });
+
+      return { ...inv, id: nextId, created_at: createdAt };
+    } catch (error) {
+      console.error('Gagal menambah invitation ke Google Sheets:', error);
+      return null;
+    }
+  }
+
+  async updateInvitation(slug, updates) {
+    if (!this.initialized) await this.init();
+    if (!this.sheets) return null;
+
+    try {
+      const response = await this.sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range: 'Invitations!A2:H',
+      });
+      const rows = response.data.values;
+      if (!rows) return null;
+
+      const cleanSlug = String(slug).toLowerCase().trim();
+      const rowIndex = rows.findIndex(row => String(row[1]).toLowerCase().trim() === cleanSlug);
+      
+      if (rowIndex === -1) {
+        // Not found in sheet, add as new
+        return await this.addInvitation({ slug, ...updates });
+      }
+
+      const sheetRowNumber = rowIndex + 2;
+      const currentRow = rows[rowIndex];
+
+      let contentStr = currentRow[6] || '{}';
+      if (updates.content) {
+        contentStr = typeof updates.content === 'object' ? JSON.stringify(updates.content) : String(updates.content);
+      }
+
+      const updatedRow = [
+        currentRow[0],
+        updates.slug !== undefined ? updates.slug : currentRow[1],
+        updates.user_id !== undefined ? updates.user_id : currentRow[2],
+        updates.template_id !== undefined ? updates.template_id : currentRow[3],
+        updates.title !== undefined ? updates.title : currentRow[4],
+        updates.status !== undefined ? updates.status : currentRow[5],
+        contentStr,
+        currentRow[7] || new Date().toISOString()
+      ];
+
+      await this.sheets.spreadsheets.values.update({
+        spreadsheetId: SPREADSHEET_ID,
+        range: `Invitations!A${sheetRowNumber}:H${sheetRowNumber}`,
+        valueInputOption: 'USER_ENTERED',
+        requestBody: { values: [updatedRow] },
+      });
+
+      return {
+        id: parseInt(updatedRow[0]),
+        slug: updatedRow[1],
+        user_id: parseInt(updatedRow[2]),
+        template_id: updatedRow[3],
+        title: updatedRow[4],
+        status: updatedRow[5],
+        content: updates.content || {},
+        created_at: updatedRow[7]
+      };
+    } catch (error) {
+      console.error('Gagal update invitation di Google Sheets:', error);
+      return null;
+    }
+  }
 }
 
 export default new GoogleSheetsDB();

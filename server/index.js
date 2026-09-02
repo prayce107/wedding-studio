@@ -35,32 +35,21 @@ app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
 app.use('/app', express.static(path.join(__dirname, '..', 'app')));
 
 // Clean Pretty URLs for published invitations
-app.get(['/i/:slug', '/invitation/:slug'], (req, res) => {
-  const slug = req.params.slug.toLowerCase();
-  const invite = db.findOne('invitations', i => i.slug === slug);
+app.get(['/i/:slug', '/invitation/:slug'], async (req, res) => {
+  const slug = req.params.slug.toLowerCase().trim();
+  let invite = db.findOne('invitations', i => i.slug === slug);
   if (!invite) {
-    return res.status(404).send(`
-      <!DOCTYPE html>
-      <html lang="id">
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Undangan Tidak Ditemukan</title>
-        <style>
-          body { font-family: 'Segoe UI', Roboto, sans-serif; background: #090706; color: #fff8ed; text-align: center; padding: 60px 20px; }
-          h2 { color: #d5a15d; }
-          a { color: #d5a15d; text-decoration: none; border-bottom: 1px dashed #d5a15d; }
-        </style>
-      </head>
-      <body>
-        <h2>Undangan Tidak Ditemukan</h2>
-        <p>Maaf, undangan dengan link ini tidak ditemukan atau belum dipublikasikan.</p>
-        <p><a href="/app/index.html">Buka Wedding Studio</a></p>
-      </body>
-      </html>
-    `);
+    try {
+      invite = await googleSheetsDB.getInvitationBySlug(slug);
+      if (invite) {
+        db.insert('invitations', invite);
+        if (invite.content) {
+          db.insert('invitation_data', { invitation_id: invite.id, content: invite.content });
+        }
+      }
+    } catch (e) {}
   }
-  const templateId = invite.template_id || 'luxury-gold';
+  const templateId = (invite && invite.template_id) || 'luxury-gold';
   const toParam = req.query.to ? `&to=${encodeURIComponent(req.query.to)}` : '';
   res.redirect(302, `/templates/${templateId}/index.html?invite=${encodeURIComponent(slug)}${toParam}`);
 });
@@ -471,6 +460,16 @@ app.put('/api/invitations/:id', authenticateToken, (req, res) => {
     }
   }
 
+  // Sync to Google Sheets asynchronously
+  const targetSlug = updates.slug || invite.slug;
+  try {
+    googleSheetsDB.updateInvitation(targetSlug, {
+      ...updatedInvite,
+      slug: targetSlug,
+      content: content || (db.findOne('invitation_data', d => d.invitation_id === id) || {}).content
+    }).catch(e => console.warn('Google sheets sync update error:', e));
+  } catch (e) {}
+
   res.json({
     ...updatedInvite,
     content: content || {}
@@ -719,39 +718,52 @@ app.delete('/api/invitations/:id/wishes/:wishId', authenticateToken, (req, res) 
 
 // ================= PUBLIC INVITATION VIEWS =================
 
-app.get('/api/public/invitations/:slug', (req, res) => {
-  const slug = req.params.slug.toLowerCase();
-  const invite = db.findOne('invitations', i => i.slug === slug);
+app.get('/api/public/invitations/:slug', async (req, res) => {
+  const slug = req.params.slug.toLowerCase().trim();
+  let invite = db.findOne('invitations', i => i.slug === slug);
+
+  if (!invite) {
+    try {
+      invite = await googleSheetsDB.getInvitationBySlug(slug);
+      if (invite) {
+        db.insert('invitations', invite);
+        if (invite.content) {
+          db.insert('invitation_data', { invitation_id: invite.id, content: invite.content });
+        }
+      }
+    } catch (e) {}
+  }
 
   if (!invite) {
     return res.status(404).json({ message: 'Undangan tidak ditemukan.' });
   }
 
-  if (invite.status !== 'active') {
-    return res.status(403).json({ message: 'Undangan ini sedang tidak aktif/belum diterbitkan.' });
-  }
-
-  // Increment views
-  db.update('invitations', invite.id, { views: (invite.views || 0) + 1 });
+  // Increment views safely
+  try {
+    db.update('invitations', invite.id, { views: (invite.views || 0) + 1 });
+  } catch (e) {}
 
   const detail = db.findOne('invitation_data', d => d.invitation_id === invite.id);
+  const contentData = (detail && detail.content) || invite.content || {};
 
   // If opened with user parameter ?to=Guest+Name, increment guest view counter
   const toParam = req.query.to;
   if (toParam) {
-    const guest = db.findOne('guests', g => g.invitation_id === invite.id && g.name.toLowerCase() === String(toParam).trim().toLowerCase());
-    if (guest) {
-      db.update('guests', guest.id, { views: (guest.views || 0) + 1 });
-    }
+    try {
+      const guest = db.findOne('guests', g => g.invitation_id === invite.id && g.name.toLowerCase() === String(toParam).trim().toLowerCase());
+      if (guest) {
+        db.update('guests', guest.id, { views: (guest.views || 0) + 1 });
+      }
+    } catch (e) {}
   }
 
   res.json({
     id: invite.id,
-    category: invite.category,
-    template_id: invite.template_id,
+    category: invite.category || 'Pernikahan',
+    template_id: invite.template_id || 'luxury-gold',
     slug: invite.slug,
-    title: invite.title,
-    content: detail ? detail.content : {}
+    title: invite.title || '',
+    content: contentData
   });
 });
 

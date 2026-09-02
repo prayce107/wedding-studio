@@ -1,6 +1,9 @@
 /**
  * Universal Invitation Live Loader & Backend Sync
- * Automatically connects published invitation pages to Express API
+ * Features:
+ * - Instant Zero-Delay Client Rendering from local cache
+ * - Automatic background sync from Google Sheets / Express API
+ * - Real-time RSVP and Guest Wishes integration
  */
 (function () {
   'use strict';
@@ -12,7 +15,7 @@
       const match = window.location.pathname.match(/\/(?:i|invitation)\/([^/]+)/);
       if (match) slug = match[1];
     }
-    return slug ? slug.toLowerCase() : null;
+    return slug ? slug.toLowerCase().trim() : null;
   }
 
   function getGuestParam() {
@@ -25,24 +28,43 @@
 
   window.currentInvitationSlug = slug;
 
+  function renderData(content) {
+    if (!content) return;
+    window.invitationData = content;
+    if (window.TemplateAdapter && typeof window.TemplateAdapter.render === 'function') {
+      window.TemplateAdapter.render(document, content);
+    }
+  }
+
   async function loadLiveInvitation() {
     if (!slug) return;
+
+    // 1. Instant Zero-Delay Cache Load
+    try {
+      const cached = localStorage.getItem('invitation_cache_' + slug);
+      if (cached) {
+        const cachedData = JSON.parse(cached);
+        if (cachedData) {
+          renderData(cachedData);
+        }
+      }
+    } catch (e) {}
+
+    // 2. Background Sync with Live API / Google Sheets
     try {
       const apiUrl = `/api/public/invitations/${encodeURIComponent(slug)}${guestTo ? '?to=' + encodeURIComponent(guestTo) : ''}`;
       const res = await fetch(apiUrl);
-      if (!res.ok) {
-        console.warn('Gagal memuat undangan dari API live:', res.statusText);
-        return;
-      }
-      const invite = await res.json();
-      if (invite && invite.content) {
-        window.invitationData = invite.content;
-        if (window.TemplateAdapter && typeof window.TemplateAdapter.render === 'function') {
-          window.TemplateAdapter.render(document, invite.content);
+      if (res.ok) {
+        const invite = await res.json();
+        if (invite && invite.content) {
+          renderData(invite.content);
+          try {
+            localStorage.setItem('invitation_cache_' + slug, JSON.stringify(invite.content));
+          } catch (e) {}
         }
       }
     } catch (e) {
-      console.warn('Error fetching live invitation:', e);
+      console.warn('Network sync notice:', e);
     }
   }
 
@@ -63,9 +85,7 @@
           `).join('');
         }
       }
-    } catch (e) {
-      console.warn('Error loading wishes:', e);
-    }
+    } catch (e) {}
   }
 
   function escapeHtml(str) {
@@ -104,10 +124,8 @@
               message: msg
             })
           });
-        } catch (err) {
-          console.warn('Server RSVP error:', err);
-        }
-      }, true); // Capture phase
+        } catch (err) {}
+      }, true);
     }
 
     // Hook Wish Form
@@ -128,19 +146,22 @@
             body: JSON.stringify({ name: n, message: w })
           });
           setTimeout(loadLiveWishes, 600);
-        } catch (err) {
-          console.warn('Server Wish error:', err);
-        }
+        } catch (err) {}
       }, true);
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    // Only auto-load if opened directly, not inside builder iframe
+  function init() {
     if (!window.parent || window.parent === window.self) {
       loadLiveInvitation();
       loadLiveWishes();
       hookLiveForms();
     }
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

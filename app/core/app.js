@@ -1267,18 +1267,7 @@
       activeDraft.status = "published";
       const res = await window.publishService.publish(slug, activeDraft);
       
-      // Update result display
-      const resultBox = $("publishedResult");
-      const pathParts = window.location.pathname.split('/');
-      if (pathParts[pathParts.length - 1] === 'index.html' || pathParts[pathParts.length - 1] === '') {
-        pathParts.pop();
-      }
-      if (pathParts[pathParts.length - 1] === 'core') {
-        pathParts.pop();
-      }
-      const basePath = pathParts.join('/') + '/';
-      const base = window.location.origin + basePath + 'index.html';
-      const fullUrl = `${base}?invite=${slug}`;
+      const fullUrl = `${window.location.origin}/i/${slug}`;
       
       resultBox.innerHTML = `
         <div class="published-result-card">
@@ -1305,7 +1294,8 @@
 
       toast("Undangan berhasil diterbitkan!");
     } catch (e) {
-      toast("Gagal menerbitkan.");
+      console.error(e);
+      toast(e.message || "Gagal menerbitkan.");
     }
   }
 

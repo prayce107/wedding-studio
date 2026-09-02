@@ -276,16 +276,25 @@ function hasLicenseForCategory(userId, category) {
     'Wisuda': 'LICENSE_E'
   };
 
-  const code = licenseMap[category];
-  if (!code) return false;
+  const code = licenseMap[category] || 'LICENSE_A';
 
-  const userLicense = db.findOne('user_licenses', ul => 
+  let userLicense = db.findOne('user_licenses', ul => 
     ul.user_id === userId && 
     ul.license_code === code && 
-    ul.active && 
-    new Date(ul.expires_at) > new Date()
+    ul.active
   );
-  return !!userLicense;
+
+  // Auto grant free 1-year license if user doesn't have one yet
+  if (!userLicense) {
+    userLicense = db.insert('user_licenses', {
+      user_id: userId,
+      license_code: code,
+      active: true,
+      expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+    });
+  }
+
+  return true;
 }
 
 // ================= USER DASHBOARD & INVITATIONS =================

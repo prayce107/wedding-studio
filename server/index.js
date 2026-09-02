@@ -7,16 +7,19 @@ import { fileURLToPath } from 'url';
 import db from './db.js';
 import { authenticateToken, requireAdmin, generateToken } from './auth.js';
 import bcrypt from 'bcryptjs';
+import os from 'os';
 import googleSheetsDB from './googleSheets.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ensure directories exist
-const uploadsDir = path.join(__dirname, 'uploads');
-const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+// Ensure directories exist safely
+const uploadsDir = process.env.VERCEL ? path.join(os.tmpdir(), 'wedding_uploads') : path.join(__dirname, 'uploads');
+const dataDir = process.env.VERCEL ? path.join(os.tmpdir(), 'wedding_data') : path.join(__dirname, 'data');
+try {
+  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+} catch (e) {}
 
 const app = express();
 const PORT = process.env.PORT || 5000;

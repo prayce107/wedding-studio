@@ -22,17 +22,35 @@ class GoogleSheetsDB {
   async init() {
     if (this.initialized) return;
 
-    if (!fs.existsSync(CREDENTIALS_PATH)) {
-      console.warn('⚠️ Kredensial Google Sheets (credentials.json) tidak ditemukan di folder server. Integrasi Google Sheets tidak akan berfungsi penuh.');
+    let authConfig = null;
+    if (process.env.GOOGLE_CREDENTIALS_JSON) {
+      try {
+        const creds = typeof process.env.GOOGLE_CREDENTIALS_JSON === 'string' 
+          ? JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON) 
+          : process.env.GOOGLE_CREDENTIALS_JSON;
+        authConfig = {
+          credentials: creds,
+          scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+        };
+      } catch (e) {
+        console.warn('Failed to parse GOOGLE_CREDENTIALS_JSON env:', e);
+      }
+    }
+
+    if (!authConfig && fs.existsSync(CREDENTIALS_PATH)) {
+      authConfig = {
+        keyFile: CREDENTIALS_PATH,
+        scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      };
+    }
+
+    if (!authConfig) {
+      console.warn('⚠️ Kredensial Google Sheets tidak ditemukan. Menggunakan database lokal JSON.');
       return;
     }
 
     try {
-      this.auth = new google.auth.GoogleAuth({
-        keyFile: CREDENTIALS_PATH,
-        scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-      });
-
+      this.auth = new google.auth.GoogleAuth(authConfig);
       const client = await this.auth.getClient();
       this.sheets = google.sheets({ version: 'v4', auth: client });
       this.initialized = true;

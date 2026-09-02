@@ -1,0 +1,132 @@
+{
+  "general": {
+    "name1": "Arya",
+    "name2": "Sekar",
+    "shortNames": "A & S",
+    "date": "21 AGUSTUS 2026",
+    "intro": "Dengan penuh syukur, kami mengundang Anda untuk menjadi bagian dari hari ketika cinta dan warisan budaya bertemu.",
+    "coupleIntro": "Dua keluarga, dua perjalanan, dan satu janji untuk tumbuh bersama.",
+    "footerText": "Semoga langkah kecil hari ini menjadi perjalanan panjang yang penuh berkah.",
+    "cultureTheme": "javanese",
+    "photoHero": ""
+  },
+  "couple": {
+    "groomName": "Arya Pratama",
+    "groomParents": "Putra dari Bapak Nama Ayah\n& Ibu Nama Ibu",
+    "groomBio": "Tentang mempelai pria.",
+    "groomPhoto": "",
+    "brideName": "Sekar Ayuningtyas",
+    "brideParents": "Putri dari Bapak Nama Ayah\n& Ibu Nama Ibu",
+    "brideBio": "Tentang mempelai wanita.",
+    "bridePhoto": ""
+  },
+  "heritage": {
+    "theme": "javanese",
+    "label": "JAVANESE HERITAGE",
+    "title": "Warisan yang Menyatukan",
+    "intro": "Tradisi, keluarga, dan simbol budaya menjadi bagian dari cerita cinta kami.",
+    "tradition": "Javanese Wedding",
+    "traditionText": "Tradisi Jawa yang sarat makna dan penghormatan kepada keluarga.",
+    "motif": "Batik Parang",
+    "motifText": "Motif yang merepresentasikan kesinambungan dan perjalanan.",
+    "symbol": "Gunungan",
+    "symbolText": "Simbol perjalanan kehidupan dan keseimbangan.",
+    "attire": "Beskap & Kebaya",
+    "attireText": "Busana tradisional sebagai identitas dan penghormatan.",
+    "meanings": [
+      {
+        "title": "Gunungan",
+        "text": "Simbol perjalanan kehidupan dan keseimbangan."
+      },
+      {
+        "title": "Batik Parang",
+        "text": "Motif yang membawa gagasan kesinambungan dan keteguhan."
+      },
+      {
+        "title": "Melati",
+        "text": "Aksen bunga sebagai simbol kesucian dan ketulusan."
+      }
+    ]
+  },
+  "event": {
+    "specialDay": "SATU HARI YANG KAMI NANTIKAN",
+    "eventIntro": "Mohon simpan tanggal berikut dan hadir menjadi bagian dari cerita kami.",
+    "target": "2026-08-21T08:00:00",
+    "akadTitle": "Akad Nikah",
+    "akadInfo": "08.00 WIB",
+    "akadVenue": "Pendopo Nusantara",
+    "receptionTitle": "Resepsi",
+    "receptionInfo": "11.00 WIB — selesai",
+    "receptionVenue": "Pendopo Nusantara",
+    "eventDress": "Traditional / Earth Tone",
+    "eventNote": "Mohon hadir 30 menit sebelum acara."
+  },
+  "story": {
+    "storyTitle": "Dari Pertemuan Menuju Selamanya",
+    "storyIntro": "Beberapa momen kecil ternyata membawa kami menuju satu keputusan besar.",
+    "stories": [
+      {
+        "year": "2021",
+        "title": "The First Meeting",
+        "text": "Sebuah pertemuan sederhana yang menjadi awal cerita."
+      },
+      {
+        "year": "2024",
+        "title": "A New Chapter",
+        "text": "Kami memilih berjalan lebih jauh bersama."
+      },
+      {
+        "year": "2026",
+        "title": "Forever Begins",
+        "text": "Hari ketika dua keluarga menjadi satu."
+      }
+    ]
+  },
+  "gallery": {
+    "galleryTitle": "Jejak yang Kami Simpan",
+    "album": []
+  },
+  "venue": {
+    "venueTitle": "Pendopo Nusantara",
+    "venueInfo": "Nama Venue, Jalan, Kota",
+    "venueNote": "Gunakan tombol berikut untuk petunjuk arah.",
+    "maps": "",
+    "mapsEmbed": ""
+  },
+  "rsvp": {
+    "rsvpTitle": "Kehadiranmu Adalah Kehormatan",
+    "rsvpIntro": "Mohon konfirmasi kehadiran agar kami dapat mempersiapkan hari istimewa ini.",
+    "rsvpButton": "KONFIRMASI KEHADIRAN"
+  },
+  "live": {
+    "liveTitle": "Saksikan dari Mana Pun",
+    "liveIntro": "Bagi keluarga dan sahabat yang belum dapat hadir secara langsung.",
+    "liveUrl": ""
+  },
+  "guestBook": {
+    "guestTitle": "Doa dan Ucapan",
+    "guestIntro": "Tinggalkan doa terbaik untuk perjalanan kami."
+  },
+  "gift": {
+    "angpouTitle": "Digital Gift",
+    "angpouIntro": "Doa dan perhatian Anda adalah hadiah terindah.",
+    "angpouBank": "Bank BCA",
+    "angpouRek": "",
+    "angpouOwner": "Atas nama:",
+    "giftSendTitle": "Kirim Hadiah",
+    "giftSendIntro": "Jika ingin mengirim hadiah fisik, silakan gunakan alamat berikut.",
+    "giftAddress": "",
+    "music": ""
+  },
+  "guest": {
+    "guestPrefix": "Kepada Yth.",
+    "guestFallback": "Bapak / Ibu / Saudara / i"
+  },
+  "style": {
+    "colors": {
+      "primary": "#cba56a",
+      "secondary": "#f0d39b",
+      "background": "#0b0907"
+    }
+  }
+}

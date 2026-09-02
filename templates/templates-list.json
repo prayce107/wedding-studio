@@ -1,0 +1,136 @@
+[
+  {
+    "id": "blue-botanical-mobile",
+    "title": "Blue Botanical",
+    "name": "Blue Botanical / Mobile Floral",
+    "description": "Desain romantis segar bernuansa biru botani dengan ornamen daun dan bunga floral, tata letak khusus mobile yang responsif dan elegan.",
+    "tags": [
+      "Mobile Layout",
+      "Bright Theme",
+      "Floral Decor",
+      "Interactive RSVP",
+      "Wishes"
+    ],
+    "preview": "templates/blue-botanical-mobile/preview.svg",
+    "features": [
+      "couple",
+      "event",
+      "story",
+      "gallery",
+      "guest",
+      "music",
+      "venue",
+      "gift",
+      "rsvp",
+      "live",
+      "guestBook"
+    ],
+    "editable": {
+      "colors": true,
+      "fonts": true,
+      "frames": false,
+      "decorations": true,
+      "animations": false
+    }
+  },
+  {
+    "id": "korean-blossom",
+    "title": "Korean Blossom",
+    "name": "korean-blossom",
+    "description": "Aesthetic Korean style template with soft pastels, polaroid frames, and falling cherry blossom animations.",
+    "tags": [
+      "romantic",
+      "pastel",
+      "minimalist",
+      "korean"
+    ],
+    "preview": null,
+    "features": [],
+    "editable": {}
+  },
+  {
+    "id": "luxury-gold",
+    "title": "Luxury Gold",
+    "name": "Luxury Gold / Parallax Lotus",
+    "description": "Desain ultra premium bernuansa emas mewah dengan pembuka amplop 3D parallax interaktif, dekorasi lotus, galeri foto, peta lokasi, dan konfirmasi kehadiran RSVP.",
+    "tags": [
+      "Amplop 3D",
+      "Lotus Frame",
+      "Gold Rain",
+      "Timeline Story",
+      "Wishes",
+      "Gifts Angpou"
+    ],
+    "preview": "templates/luxury-gold/preview.svg",
+    "features": [
+      "couple",
+      "event",
+      "story",
+      "gallery",
+      "guest",
+      "music",
+      "venue",
+      "gift",
+      "rsvp",
+      "live",
+      "guestBook"
+    ],
+    "editable": {
+      "colors": true,
+      "fonts": true,
+      "frames": true,
+      "decorations": true,
+      "animations": true
+    }
+  },
+  {
+    "id": "nusantara-heritage",
+    "title": "Nusantara Heritage",
+    "name": "Nusantara Heritage / Cultural Luxury",
+    "description": "Desain bernuansa budaya tradisional Indonesia (Jawa, Sunda, Bali, Minang, dll.) dengan gerbang heritage megah, ornamen etnik premium, galeri foto, peta lokasi, dan RSVP.",
+    "tags": [
+      "Cultural Theme",
+      "Heritage Gate",
+      "Traditional Ornament",
+      "Interactive Envelope",
+      "Timeline Story",
+      "Wishes"
+    ],
+    "preview": "templates/nusantara-heritage/preview.svg",
+    "features": [
+      "couple",
+      "event",
+      "story",
+      "gallery",
+      "guest",
+      "music",
+      "venue",
+      "gift",
+      "rsvp",
+      "live",
+      "guestBook"
+    ],
+    "editable": {
+      "colors": true,
+      "fonts": true,
+      "frames": true,
+      "decorations": true,
+      "animations": true
+    }
+  },
+  {
+    "id": "vintage-elegance",
+    "title": "Vintage Elegance",
+    "name": "vintage-elegance",
+    "description": "High-end editorial French garden wedding style with vintage metallic picture frames, lace borders, and a pocket cover.",
+    "tags": [
+      "luxury",
+      "editorial",
+      "vintage",
+      "classic"
+    ],
+    "preview": null,
+    "features": [],
+    "editable": {}
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "id": "blue-botanical-mobile",
+  "title": "Blue Botanical",
+  "name": "Blue Botanical / Mobile Floral",
+  "version": "1.0.0",
+  "category": "wedding",
+  "preview": "preview.svg",
+  "description": "Desain romantis segar bernuansa biru botani dengan ornamen daun dan bunga floral, tata letak khusus mobile yang responsif dan elegan.",
+  "tags": ["Mobile Layout", "Bright Theme", "Floral Decor", "Interactive RSVP", "Wishes"],
+  "features": [
+    "couple",
+    "event",
+    "story",
+    "gallery",
+    "guest",
+    "music",
+    "venue",
+    "gift",
+    "rsvp",
+    "live",
+    "guestBook"
+  ],
+  "adapter": "adapter.js",
+  "editable": {
+    "colors": true,
+    "fonts": true,
+    "frames": false,
+    "decorations": true,
+    "animations": false
+  }
+}

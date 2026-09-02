@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fff0r2">
+  <meta name="description" content="Undangan Pernikahan Aesthetic">
+  <title>Korean Blossom — Undangan Digital Premium</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="lock">
+  
+  <!-- Falling Cherry Blossom Canvas (Sakura Particles) -->
+  <canvas class="sakura-canvas" id="sakuraCanvas"></canvas>
+  
+  <!-- Dynamic Orbs Background -->
+  <div class="bg-orb orb1"></div>
+  <div class="bg-orb orb2"></div>
+  
+  <!-- Interactive Present / Ribbon Cover Section -->
+  <section class="cover" id="cover">
+    <div class="cover-noise"></div>
+    <div class="cover-glow"></div>
+    
+    <div class="present-envelope" id="presentWrapper">
+      <div class="card-inner-frame">
+        <small class="korean-script-subtitle">Our Special Day</small>
+        <h2 class="calligraphy-names" style="margin: 15px 0;"><span data-bind="name1"></span> &amp; <span data-bind="name2"></span></h2>
+        <div class="goldline-card"></div>
+        
+        <!-- Interactive Ribbon Bow -->
+        <div class="ribbon-container">
+          <div class="ribbon-horizontal"></div>
+          <div class="ribbon-vertical"></div>
+          <button class="ribbon-bow-btn" id="openBtn" title="Buka Undangan">
+            <span class="ribbon-icon">🎀</span>
+          </button>
+        </div>
+        
+        <div class="guest-box">
+          <span>Kepada Yth. Bapak/Ibu/Saudara/i</span>
+          <strong id="coverGuestName">Nama Tamu</strong>
+        </div>
+        <div class="open-hint">KETUK PITA UNTUK MEMBUKA</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Sections -->
+  <main id="main">
+    
+    <!-- Top Nav bar -->
+    <nav class="nav" id="nav">
+      <a href="#home" class="nav-logo" data-bind="shortNames"></a>
+      <div class="nav-actions">
+        <button class="icon" id="musicBtn" title="Musik">♫</button>
+        <button class="icon" id="shareBtn" title="Bagikan">↗</button>
+      </div>
+    </nav>
+    
+    <!-- Bottom Responsive Nav -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Navigasi undangan">
+      <a href="#home"><span class="mi">⌂</span>Home</a>
+      <a href="#couple"><span class="mi">♡</span>Mempelai</a>
+      <a href="#event"><span class="mi">♢</span>Acara</a>
+      <a href="#rsvpSection"><span class="mi">✓</span>RSVP</a>
+    </nav>
+
+    <!-- Section 1: Hero Section (Minimal Korean Grid) -->
+    <section class="section hero" id="home">
+      <div class="hero-card-container reveal">
+        <div class="card-border-frame">
+          <div class="blossom-badge">봄날의 결혼식</div>
+          <small class="script-subtitle">The Marriage of</small>
+          
+          <div class="hero-photo-wrap">
+            <div class="polaroid-frame">
+              <img class="hero-photo" id="heroPhoto" src="" alt="Foto pasangan">
+              <span class="polaroid-tape"></span>
+            </div>
+          </div>
+          
+          <h1 class="calligraphy-hero-names"><span data-bind="name1"></span> &amp; <span data-bind="name2"></span></h1>
+          <p class="hero-intro-text" data-bind="intro"></p>
+          <div class="guest-greeting-box" id="guestGreeting"></div>
+          <div class="hero-date-badge" data-bind="date"></div>
+        </div>
+      </div>
+      <div class="scrollcue">SCROLL DOWN TO DISCOVER ↓</div>
+    </section>
+
+    <!-- Section 2: Couple Bio (Polaroid Cards) -->
+    <section class="section couple-section" id="couple">
+      <div class="couple-wrap reveal">
+        <small class="script-subtitle">Meet the Couple</small>
+        <h2 class="section-title">Mempelai</h2>
+        <div class="goldline"></div>
+        <p class="couple-intro" data-bind="coupleIntro"></p>
+        
+        <div class="couple-grid">
+          
+          <!-- Groom Card -->
+          <article class="person-card">
+            <div class="polaroid-card-container">
+              <img id="groomPhoto" src="" alt="Mempelai pria">
+              <span class="polaroid-tape-tilted"></span>
+            </div>
+            <small class="script-role">The Groom</small>
+            <h3 class="person-name" data-bind="groomName"></h3>
+            <div class="goldline-small"></div>
+            <p class="parents-info" data-bind="groomParents"></p>
+            <div class="person-social-bio" data-bind="groomBio"></div>
+          </article>
+          
+          <div class="couple-separator-amp">✦</div>
+          
+          <!-- Bride Card -->
+          <article class="person-card">
+            <div class="polaroid-card-container">
+              <img id="bridePhoto" src="" alt="Mempelai wanita">
+              <span class="polaroid-tape-tilted"></span>
+            </div>
+            <small class="script-role">The Bride</small>
+            <h3 class="person-name" data-bind="brideName"></h3>
+            <div class="goldline-small"></div>
+            <p class="parents-info" data-bind="brideParents"></p>
+            <div class="person-social-bio" data-bind="brideBio"></div>
+          </article>
+          
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Day Program Timeline (Line Icons) -->
+    <section class="section program-section" id="programSection">
+      <div class="program-wrap reveal">
+        <small class="script-subtitle">Wedding Events</small>
+        <h2 class="section-title">Day Program</h2>
+        <div class="goldline"></div>
+        <p class="program-intro">Rincian rangkaian kegiatan di hari istimewa kami:</p>
+        
+        <div class="program-timeline" id="programTimeline">
+          <!-- Dynamic timeline items from adapter -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Event Details -->
+    <section class="section event-section" id="event">
+      <div class="event-wrap reveal">
+        <small class="script-subtitle">Save The Date</small>
+        <h2 class="section-title" data-bind="specialDay"></h2>
+        <p class="event-intro" data-bind="eventIntro"></p>
+        
+        <!-- Count down timer -->
+        <div class="countdown" id="countdown">
+          <div class="time-block"><strong>00</strong><span>HARI</span></div>
+          <div class="time-block"><strong>00</strong><span>JAM</span></div>
+          <div class="time-block"><strong>00</strong><span>MENIT</span></div>
+          <div class="time-block"><strong>00</strong><span>DETIK</span></div>
+        </div>
+        
+        <div class="event-grid">
+          <!-- Akad / Ceremony Card -->
+          <div class="event-card-pink">
+            <div class="inner-border">
+              <h3 data-bind="akadTitle"></h3>
+              <div class="event-line"></div>
+              <small class="event-time" data-bind="akadInfo"></small>
+              <p class="event-venue" id="akadVenueText"></p>
+            </div>
+          </div>
+          
+          <!-- Reception Card -->
+          <div class="event-card-pink">
+            <div class="inner-border">
+              <h3 data-bind="receptionTitle"></h3>
+              <div class="event-line"></div>
+              <small class="event-time" data-bind="receptionInfo"></small>
+              <p class="event-venue" id="receptionVenueText"></p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="event-extra-info">
+          <div class="info-row">
+            <strong>Dress Code</strong>
+            <span id="eventDressText"></span>
+          </div>
+          <div class="info-row">
+            <strong>Catatan Penting</strong>
+            <span id="eventNoteText"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Google Maps & Venue Location -->
+    <section class="section location-section">
+      <div class="location-container reveal">
+        <div class="mapbox" id="mapbox">
+          <div class="map-placeholder" id="mapPlaceholder">
+            <span>⌖</span><strong>PETA LOKASI</strong><small>Google Maps</small>
+          </div>
+          <iframe id="mapsFrame" title="Lokasi acara" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <div class="location-details">
+          <small class="script-subtitle">The Venue</small>
+          <h2 data-bind="venueTitle"></h2>
+          <p class="venue-info-text" id="venueInfo"></p>
+          <p class="venue-note-text" id="venueNote"></p>
+          <a class="gold-accent-btn" id="mapsBtn" href="#" target="_blank" rel="noopener">BUKA GOOGLE MAPS ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Accommodation -->
+    <section class="section accommodation-section" id="accommodationSection">
+      <div class="accommodation-wrap reveal">
+        <small class="script-subtitle">Where To Stay</small>
+        <h2 class="section-title">Akomodasi Terdekat</h2>
+        <div class="goldline"></div>
+        <p class="accommodation-intro">Untuk kenyamanan menginap Anda, berikut adalah beberapa rekomendasi hotel terdekat:</p>
+        
+        <div class="hotels-grid" id="hotelsGrid">
+          <!-- Dynamic hotel cards -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Wedding Attire Palette -->
+    <section class="section attire-section" id="attireSection">
+      <div class="attire-wrap reveal">
+        <small class="script-subtitle">Wedding Attire</small>
+        <h2 class="section-title">Palet Warna Pakaian</h2>
+        <div class="goldline"></div>
+        <p class="attire-intro" id="attireIntroText">Kami sarankan para tamu undangan mengenakan pakaian menyesuaikan dengan palet warna berikut:</p>
+        
+        <div class="colors-palette-swatch" id="attirePalette">
+          <!-- Dynamic color swatches -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 8: Live Streaming -->
+    <section class="section live-section" id="liveSection">
+      <div class="streaming-wrap reveal">
+        <small class="script-subtitle">Live Moment</small>
+        <h2 class="section-title" data-bind="liveTitle"></h2>
+        <div class="goldline"></div>
+        <p data-bind="liveIntro"></p>
+        <div class="streaming-player-box">
+          <a class="live-btn" id="liveBtn" href="#" target="_blank" rel="noopener">▶ TONTON LIVE STREAMING</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: Love Journey Story -->
+    <section class="section story-section">
+      <div class="story-wrap reveal">
+        <div class="ornament">🎀</div>
+        <small class="script-subtitle">Our Journey</small>
+        <h2 class="section-title" data-bind="storyTitle"></h2>
+        <div class="goldline"></div>
+        <p class="story-intro" data-bind="storyIntro"></p>
+        
+        <div class="timeline" id="timeline">
+          <!-- Dynamic timeline stories -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 10: Gallery Album -->
+    <section class="section gallery-section" id="gallerySection">
+      <div class="gallery-wrap reveal">
+        <small class="script-subtitle">Our Moments</small>
+        <h2 class="section-title" data-bind="galleryTitle"></h2>
+        <div class="goldline"></div>
+        <div class="gallery-grid" id="gallery"></div>
+      </div>
+    </section>
+
+    <!-- Section 11: RSVP Form -->
+    <section class="section rsvp-section" id="rsvpSection">
+      <div class="rsvp-wrap reveal">
+        <small class="script-subtitle">Kindly Respond</small>
+        <h2 data-bind="rsvpTitle"></h2>
+        <div class="goldline"></div>
+        <p class="rsvp-intro" data-bind="rsvpIntro"></p>
+        <form class="rsvp-form" id="rsvpForm">
+          <input class="input-field" id="guestName" required placeholder="Nama Lengkap Anda">
+          <select class="input-field select-field" id="attendance">
+            <option value="Hadir">Saya akan hadir</option>
+            <option value="Tidak hadir">Maaf, tidak dapat hadir</option>
+          </select>
+          <input class="input-field" id="guestCount" type="number" min="1" max="99" value="1" placeholder="Jumlah tamu">
+          <textarea class="textarea-field" id="message" placeholder="Tulis ucapan dan doa terbaik Anda..."></textarea>
+          <button class="submit-btn" type="submit" data-bind="rsvpButton"></button>
+        </form>
+        <div id="rsvpStatus"></div>
+      </div>
+    </section>
+
+    <!-- Section 12: Guestbook Wishes List -->
+    <section class="section guestbook-section" id="guestbookSection">
+      <div class="guestbook-wrap reveal">
+        <small class="script-subtitle">Wishes &amp; Prayers</small>
+        <h2 class="section-title" data-bind="guestTitle"></h2>
+        <div class="goldline"></div>
+        <p class="guestbook-intro" data-bind="guestIntro"></p>
+        <div class="guestbook-inputs">
+          <input class="input-field" id="wishName" placeholder="Nama Anda">
+          <textarea class="textarea-field" id="wishText" placeholder="Tulis ucapan selamat dan doa..."></textarea>
+          <button class="submit-btn" id="wishBtn" type="button">KIRIM UCAPAN</button>
+        </div>
+        <div class="guest-messages-list" id="guestMessages"></div>
+      </div>
+    </section>
+
+    <!-- Section 13: Angpou Digital Gift & Address -->
+    <section class="section gift-section" id="giftSection">
+      <div class="gift-wrap reveal">
+        <small class="script-subtitle">Digital Gift</small>
+        <h2 class="section-title" data-bind="angpouTitle"></h2>
+        <div class="goldline"></div>
+        <p class="gift-intro" data-bind="angpouIntro"></p>
+        <div class="gift-account-card">
+          <strong class="bank-name" data-bind="angpouBank"></strong>
+          <div class="copy-input-row">
+            <input class="copy-display" id="angpouRek" readonly value="">
+            <button class="copy-action-btn" id="copyAngpou">SALIN</button>
+          </div>
+          <div class="account-owner" data-bind="angpouOwner"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 14: Send Package Address -->
+    <section class="section gift-address-section" id="giftAddressSection">
+      <div class="gift-wrap reveal">
+        <small class="script-subtitle">Send A Gift</small>
+        <h2 class="section-title" data-bind="giftSendTitle"></h2>
+        <div class="goldline"></div>
+        <p class="gift-intro" data-bind="giftSendIntro"></p>
+        <div class="gift-address-card">
+          <div class="address-display" id="giftAddress"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 15: Other Gifts List -->
+    <section class="section other-gifts-section" id="giftsListSection">
+      <div class="gift-wrap reveal">
+        <small class="script-subtitle">Wedding Gift</small>
+        <h2 class="other-gifts-title" data-bind="giftTitle"></h2>
+        <p class="gift-intro" data-bind="giftIntro"></p>
+        <div class="other-gifts-grid" id="giftGrid"></div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="ornament-burst">🎀 ✿ 🎀 ✿ 🎀</div>
+      <small class="script-subtitle-footer">With Love</small>
+      <strong class="footer-names"><span data-bind="name1"></span> &amp; <span data-bind="name2"></span></strong>
+      <p class="footer-note" data-bind="footerText"></p>
+    </footer>
+  </main>
+
+  <!-- Lightbox Gallery Modal -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close-btn" id="lbClose">×</button>
+    <img id="lbImg" alt="Detail album">
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+  
+  <!-- Audio Music Tag -->
+  <audio id="music" loop preload="none"></audio>
+
+  <!-- Load Platform Services & Adapters -->
+  <script src="../../app/services/rsvpService.js"></script>
+  <script src="adapter.js"></script>
+  <script src="script.js"></script>
+  <script src="../../assets/invitation-loader.js"></script>
+</body>
+</html>

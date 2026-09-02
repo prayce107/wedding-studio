@@ -1,0 +1,47 @@
+.gold-rain {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.7s ease, visibility 0.7s ease;
+}
+body.invitation-open .gold-rain {
+  opacity: 1;
+  visibility: visible;
+}
+.gold-leaf {
+  position: absolute;
+  top: -70px;
+  width: 10px;
+  height: 23px;
+  border-radius: 75% 10% 75% 10%;
+  background: linear-gradient(135deg,#fff0b0 0%,#e2ad57 40%,#9b6729 100%);
+  box-shadow: 0 0 12px rgba(224,173,87,.28);
+  transform-origin: 50% 15%;
+  animation: goldLeafDrop var(--dur,10s) linear infinite;
+  animation-delay: var(--delay,0s);
+  opacity: .75;
+  animation-timing-function: cubic-bezier(.32,.04,.22,1);
+  will-change: transform, opacity;
+}
+.gold-leaf:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 3px;
+  width: 1px;
+  height: 18px;
+  background: rgba(255,238,184,.75);
+  transform: rotate(18deg);
+  transform-origin: top;
+}
+@keyframes goldLeafDrop {
+  0% { transform: translate3d(0,-80px,0) rotate(-30deg); opacity: 0 }
+  8% { opacity: .8 }
+  35% { transform: translate3d(34px,34vh,0) rotate(115deg) }
+  68% { transform: translate3d(-28px,68vh,0) rotate(245deg); opacity: .62 }
+  100% { transform: translate3d(45px,115vh,0) rotate(420deg); opacity: 0 }
+}

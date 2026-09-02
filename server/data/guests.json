@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1,
+    "created_at": "2026-08-17T08:07:04.164Z",
+    "invitation_id": 1,
+    "name": "Andri Prayoga",
+    "slug": "andri-prayoga",
+    "views": 3,
+    "rsvp_status": "hadir",
+    "updated_at": "2026-08-17T08:17:02.433Z"
+  },
+  {
+    "id": 2,
+    "created_at": "2026-08-17T08:07:04.166Z",
+    "invitation_id": 1,
+    "name": "Budi",
+    "slug": "budi",
+    "views": 0,
+    "rsvp_status": "belum_konfirmasi"
+  },
+  {
+    "id": 3,
+    "created_at": "2026-08-17T21:21:32.602Z",
+    "invitation_id": 5,
+    "name": "andri",
+    "slug": "andri",
+    "views": 2,
+    "rsvp_status": "belum_konfirmasi",
+    "updated_at": "2026-08-17T21:21:48.947Z"
+  }
+]

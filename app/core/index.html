@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Wedding Studio — Workspace Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=12">
+</head>
+<body>
+  <!-- App Shell -->
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <a href="../index.html" class="back-btn" title="Kembali ke Dashboard">
+          <span class="icon-arrow">←</span>
+        </a>
+        <div class="brand-info">
+          <h1>WEDDING STUDIO</h1>
+          <span class="badge">Builder Workspace</span>
+        </div>
+      </div>
+      
+      <div class="header-center">
+        <!-- Device Responsive Toggle -->
+        <div class="device-toggle">
+          <button class="device-btn active" data-device="mobile" title="Preview Mobile">
+            <span class="device-icon">📱</span> Mobile
+          </button>
+          <button class="device-btn" data-device="tablet" title="Preview Tablet">
+            <span class="device-icon">📟</span> Tablet
+          </button>
+          <button class="device-btn" data-device="desktop" title="Preview Desktop">
+            <span class="device-icon">💻</span> Desktop
+          </button>
+        </div>
+
+        <!-- Mobile Mode Switcher (Visible on Mobile only) -->
+        <div class="mobile-mode-switcher">
+          <button class="mode-btn active" id="mobileEditBtn">✍ Edit</button>
+          <button class="mode-btn" id="mobilePreviewBtn">👁 Preview</button>
+        </div>
+      </div>
+      
+      <div class="header-right">
+        <span class="draft-status" id="saveStatus">Draft tersimpan otomatis</span>
+        <button class="btn-primary" id="headerPublishBtn">Terbitkan Undangan</button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="workspace">
+      
+      <!-- Left Panel: Sidebar Editor Controls -->
+      <aside class="sidebar">
+        
+        <!-- Tab Navigation -->
+        <div class="sidebar-tabs">
+          <button class="nav-tab active" data-tab="data">Data</button>
+          <button class="nav-tab" data-tab="design">Desain</button>
+          <button class="nav-tab" data-tab="guests">Tamu</button>
+          <button class="nav-tab" data-tab="rsvp">RSVP</button>
+          <button class="nav-tab" data-tab="publish">Publish</button>
+        </div>
+
+        <!-- Sidebar Panel Container -->
+        <div class="panel-content">
+          
+          <!-- TAB 1: DATA MODEL INPUTS -->
+          <div class="tab-panel active" id="panel-data">
+            <div class="panel-section">
+              <h2>Data Mempelai</h2>
+              
+              <div class="accordion">
+                <div class="accordion-item">
+                  <button class="accordion-header">Mempelai Pria & Wanita</button>
+                  <div class="accordion-body">
+                    <div class="form-grid">
+                      <div class="field">
+                        <label>Panggilan Pria</label>
+                        <input type="text" data-edit="general.name2" id="groomShort">
+                      </div>
+                      <div class="field">
+                        <label>Panggilan Wanita</label>
+                        <input type="text" data-edit="general.name1" id="brideShort">
+                      </div>
+                      <div class="field full">
+                        <label>Logo Inisial Tampilan</label>
+                        <input type="text" data-edit="general.shortNames">
+                      </div>
+                      <div class="field full">
+                        <label>Nama Lengkap Mempelai Pria</label>
+                        <input type="text" data-edit="couple.groomName">
+                      </div>
+                      <div class="field full">
+                        <label>Nama Orang Tua Pria</label>
+                        <textarea data-edit="couple.groomParents"></textarea>
+                      </div>
+                      <div class="field full">
+                        <label>Bio Singkat Pria</label>
+                        <textarea data-edit="couple.groomBio"></textarea>
+                      </div>
+                      <div class="field full">
+                        <label>Nama Lengkap Mempelai Wanita</label>
+                        <input type="text" data-edit="couple.brideName">
+                      </div>
+                      <div class="field full">
+                        <label>Nama Orang Tua Wanita</label>
+                        <textarea data-edit="couple.brideParents"></textarea>
+                      </div>
+                      <div class="field full">
+                        <label>Bio Singkat Wanita</label>
+                        <textarea data-edit="couple.brideBio"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <button class="accordion-header">Foto Mempelai & Cover</button>
+                  <div class="accordion-body">
+                    <div class="form-grid">
+                      <div class="field full">
+                        <label>Foto Cover Utama (Hero)</label>
+                        <div class="upload-box">
+                          <input type="file" accept="image/*" id="upload-hero">
+                          <div class="upload-placeholder">Pilih foto cover</div>
+                          <img id="preview-hero" class="img-preview hidden">
+                        </div>
+                      </div>
+                      <div class="field">
+                        <label>Foto Pria</label>
+                        <div class="upload-box">
+                          <input type="file" accept="image/*" id="upload-groom">
+                          <div class="upload-placeholder">Foto Pria</div>
+                          <img id="preview-groom" class="img-preview hidden">
+                        </div>
+                      </div>
+                      <div class="field">
+                        <label>Foto Wanita</label>
+                        <div class="upload-box">
+                          <input type="file" accept="image/*" id="upload-bride">
+                          <div class="upload-placeholder">Foto Wanita</div>
+                          <img id="preview-bride" class="img-preview hidden">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <h2>Detail Acara & Tanggal</h2>
+              <div class="accordion">
+                <div class="accordion-item">
+                  <button class="accordion-header">Waktu & Countdown</button>
+                  <div class="accordion-body">
+                    <div class="form-grid">
+                      <div class="field full">
+                        <label>Kalimat Pengantar Acara</label>
+                        <textarea data-edit="general.intro"></textarea>
+                      </div>
+                      <div class="field full">
+                        <label>Judul Bagian Tanggal</label>
+                        <input type="text" data-edit="event.specialDay">
+                      </div>
+                      <div class="field full">
+                        <label>Sub-judul Acara</label>
+                        <input type="text" data-edit="event.eventIntro">
+                      </div>
+                      <div class="field">
+                        <label>Tanggal Tampilan (Teks)</label>
+                        <input type="text" data-edit="general.date">
+                      </div>
+                      <div class="field">
+                        <label>Target Hitung Mundur (ISO)</label>
+                        <input type="text" data-edit="event.target" placeholder="YYYY-MM-DDTHH:MM:SS">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <button class="accordion-header">Akad Nikah & Resepsi</button>
+                  <div class="accordion-body">
+                    <div class="form-grid">
+                      <div class="field">
+                        <label>Judul Akad</label>
+                        <input type="text" data-edit="event.akadTitle">
+                      </div>
+                      <div class="field">
+                        <label>Waktu Akad</label>
+                        <input type="text" data-edit="event.akadInfo">
+                      </div>
+                      <div class="field full">
+                        <label>Tempat Akad</label>
+                        <input type="text" data-edit="event.akadVenue">
+                      </div>
+                      <div class="field">
+                        <label>Judul Resepsi</label>
+                        <input type="text" data-edit="event.receptionTitle">
+                      </div>
+                      <div class="field">
+                        <label>Waktu Resepsi</label>
+                        <input type="text" data-edit="event.receptionInfo">
+                      </div>
+                      <div class="field full">
+                        <label>Tempat Resepsi</label>
+                        <input type="text" data-edit="event.receptionVenue">
+                      </div>
+                      <div class="field">
+                        <label>Dress Code</label>
+                        <input type="text" data-edit="event.eventDress">
+                      </div>
+                      <div class="field">
+                        <label>Catatan Acara</label>
+                        <input type="text" data-edit="event.eventNote">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section template-specific" data-templates="nusantara-heritage">
+              <h2>Tema Budaya</h2>
+              <div class="form-grid">
+                <div class="field full" style="margin-bottom: 0;">
+                  <label>Pilih Preset Adat &amp; Warna</label>
+                  <select id="cultureThemeSelect" data-edit="general.cultureTheme" style="width: 100%; background: #080604; border: 1px solid var(--border); color: var(--cream); padding: 11px 14px; border-radius: 8px; font-size: 13px; outline: none;">
+                    <option value="javanese">Jawa (Javanese)</option>
+                    <option value="sundanese">Sunda (Sundanese)</option>
+                    <option value="balinese">Bali (Balinese)</option>
+                    <option value="minang">Minang (Minangkabau)</option>
+                    <option value="bugis">Bugis (Bugis/Makassar)</option>
+                    <option value="batak">Batak (Toba/Mandailing)</option>
+                    <option value="melayu">Melayu (Malay)</option>
+                    <option value="nusantara">Nusantara (Bhinneka Tunggal Ika)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section template-specific" data-templates="nusantara-heritage">
+              <h2>Susunan Acara & Hotel</h2>
+              <div class="accordion">
+                <div class="accordion-item">
+                  <button class="accordion-header">Susunan Acara (Timeline)</button>
+                  <div class="accordion-body">
+                    <p class="section-desc" style="margin-bottom: 12px; color: var(--text-muted); font-size:11px;">Atur susunan kegiatan di hari pernikahan Anda.</p>
+                    <div class="list-container" id="program-list"></div>
+                    <button class="btn-secondary full-width" id="addProgramBtn" style="margin-top: 10px;">+ Tambah Acara Baru</button>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <button class="accordion-header">Akomodasi & Hotel</button>
+                  <div class="accordion-body">
+                    <p class="section-desc" style="margin-bottom: 12px; color: var(--text-muted); font-size:11px;">Atur daftar hotel terdekat bagi tamu undangan.</p>
+                    <div class="list-container" id="hotels-list"></div>
+                    <button class="btn-secondary full-width" id="addHotelBtn" style="margin-top: 10px;">+ Tambah Hotel Baru</button>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <button class="accordion-header">Dress Code & Palette Warna</button>
+                  <div class="accordion-body">
+                    <div class="form-grid">
+                      <div class="field full">
+                        <label>Petunjuk Warna Pakaian</label>
+                        <textarea data-edit="attire.introText" id="attireIntroInput" placeholder="Contoh: Tamu dipersilakan mengenakan pakaian bernuansa sage green..."></textarea>
+                      </div>
+                      <div class="field">
+                        <label>Warna Swatch 1</label>
+                        <input type="color" id="attireColor1" style="height:40px; padding:0; border:0; width:100%;">
+                      </div>
+                      <div class="field">
+                        <label>Warna Swatch 2</label>
+                        <input type="color" id="attireColor2" style="height:40px; padding:0; border:0; width:100%;">
+                      </div>
+                      <div class="field">
+                        <label>Warna Swatch 3</label>
+                        <input type="color" id="attireColor3" style="height:40px; padding:0; border:0; width:100%;">
+                      </div>
+                      <div class="field">
+                        <label>Warna Swatch 4</label>
+                        <input type="color" id="attireColor4" style="height:40px; padding:0; border:0; width:100%;">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <h2>Love Story & Timeline</h2>
+              <div class="form-grid">
+                <div class="field full">
+                  <label>Judul Cerita</label>
+                  <input type="text" data-edit="story.storyTitle">
+                </div>
+                <div class="field full">
+                  <label>Pengantar Cerita</label>
+                  <textarea data-edit="story.storyIntro"></textarea>
+                </div>
+              </div>
+              <div class="list-container" id="story-list"></div>
+              <button class="btn-secondary full-width" id="addStoryBtn">+ Tambah Momen Cerita</button>
+            </div>
+
+            <div class="panel-section">
+              <h2>Album Foto (Gallery)</h2>
+              <div class="form-grid">
+                <div class="field full">
+                  <label>Judul Album</label>
+                  <input type="text" data-edit="gallery.galleryTitle">
+                </div>
+                <div class="field full">
+                  <label>Upload Foto Baru</label>
+                  <div class="upload-box select-multiple">
+                    <input type="file" accept="image/*" multiple id="upload-album">
+                    <div class="upload-placeholder">Pilih beberapa foto sekaligus</div>
+                  </div>
+                </div>
+              </div>
+              <div class="album-grid" id="album-list"></div>
+            </div>
+
+            <div class="panel-section">
+              <h2>Media (Musik & Streaming)</h2>
+              <div class="accordion">
+                <div class="accordion-item">
+                  <button class="accordion-header">Latar Musik (MP3)</button>
+                  <div class="accordion-body">
+                    <div class="form-grid">
+                      <div class="field full">
+                        <label>Upload Lagu MP3</label>
+                        <div class="upload-box">
+                          <input type="file" accept="audio/*" id="upload-music">
+                          <div class="upload-placeholder">Pilih MP3 lagu romantis</div>
+                        </div>
+                      </div>
+                      <div class="field full">
+                        <label>Atau isi Direct URL MP3</label>
+                        <input type="text" data-edit="music.music" placeholder="https://storage.com/song.mp3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <button class="accordion-header">Live Streaming</button>
+                  <div class="accordion-body">
+                    <div class="form-grid">
+                      <div class="field full">
+                        <label>Judul Live Streaming</label>
+                        <input type="text" data-edit="live.liveTitle">
+                      </div>
+                      <div class="field full">
+                        <label>Deskripsi Live Streaming</label>
+                        <textarea data-edit="live.liveIntro"></textarea>
+                      </div>
+                      <div class="field full">
+                        <label>Link Streaming (Youtube/Zoom/dll)</label>
+                        <input type="text" data-edit="live.liveUrl">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <h2>Peta Lokasi Acara</h2>
+              <div class="form-grid">
+                <div class="field full">
+                  <label>Nama Venue</label>
+                  <input type="text" data-edit="venue.venueTitle">
+                </div>
+                <div class="field full">
+                  <label>Alamat Lengkap</label>
+                  <textarea data-edit="venue.venueInfo"></textarea>
+                </div>
+                <div class="field full">
+                  <label>Link Google Maps Share</label>
+                  <input type="text" data-edit="venue.maps">
+                </div>
+                <div class="field full">
+                  <label>Link Google Maps Embed (iframe src)</label>
+                  <input type="text" data-edit="venue.mapsEmbed" placeholder="https://www.google.com/maps/embed?...">
+                </div>
+                <div class="field full">
+                  <label>Catatan Lokasi (Akses/Parkir)</label>
+                  <textarea data-edit="venue.venueNote"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <h2>Hadiah Digital & Kado</h2>
+              <div class="accordion">
+                <div class="accordion-item">
+                  <button class="accordion-header">Kirim Kado (Paket)</button>
+                  <div class="accordion-body">
+                    <div class="form-grid">
+                      <div class="field full">
+                        <label>Judul Kirim Kado</label>
+                        <input type="text" data-edit="gift.giftSendTitle">
+                      </div>
+                      <div class="field full">
+                        <label>Pengantar Alamat Kado</label>
+                        <textarea data-edit="gift.giftSendIntro"></textarea>
+                      </div>
+                      <div class="field full">
+                        <label>Alamat Penerimaan Kado</label>
+                        <textarea data-edit="gift.giftAddress"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="accordion-item">
+                  <button class="accordion-header">Angpou Transfer (Bank/E-Wallet)</button>
+                  <div class="accordion-body">
+                    <div class="form-grid">
+                      <div class="field full">
+                        <label>Judul Bagian Angpou</label>
+                        <input type="text" data-edit="gift.angpouTitle">
+                      </div>
+                      <div class="field full">
+                        <label>Pengantar Transfer Angpou</label>
+                        <textarea data-edit="gift.angpouIntro"></textarea>
+                      </div>
+                      <div class="field">
+                        <label>Bank / E-Wallet Utama</label>
+                        <input type="text" data-edit="gift.angpouBank">
+                      </div>
+                      <div class="field">
+                        <label>Nomor Rekening Utama</label>
+                        <input type="text" data-edit="gift.angpouRek">
+                      </div>
+                      <div class="field full">
+                        <label>Nama Pemilik Rekening Utama</label>
+                        <input type="text" data-edit="gift.angpouOwner">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <button class="accordion-header">Tambah Daftar Rekening Transfer Lainnya</button>
+                  <div class="accordion-body">
+                    <div class="form-grid">
+                      <div class="field full">
+                        <label>Judul Bagian Rekening</label>
+                        <input type="text" data-edit="gift.giftTitle">
+                      </div>
+                      <div class="field full">
+                        <label>Pengantar Daftar Rekening</label>
+                        <textarea data-edit="gift.giftIntro"></textarea>
+                      </div>
+                    </div>
+                    <div class="list-container" id="gift-list" style="margin-top: 15px;"></div>
+                    <button class="btn-secondary full-width" id="addGiftBtn">+ Tambah Rekening Baru</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <h2>Pengaturan Teks & Kustomisasi</h2>
+              <div class="form-grid">
+                <div class="field full">
+                  <label>Judul RSVP</label>
+                  <input type="text" data-edit="rsvp.rsvpTitle">
+                </div>
+                <div class="field full">
+                  <label>Pengantar RSVP</label>
+                  <textarea data-edit="rsvp.rsvpIntro"></textarea>
+                </div>
+                <div class="field">
+                  <label>Teks Tombol RSVP</label>
+                  <input type="text" data-edit="rsvp.rsvpButton">
+                </div>
+                <div class="field">
+                  <label>Teks Footer Penutup</label>
+                  <input type="text" data-edit="general.footerText">
+                </div>
+                <div class="field">
+                  <label>Judul Ucapan & Doa</label>
+                  <input type="text" data-edit="guestBook.guestTitle">
+                </div>
+                <div class="field">
+                  <label>Pengantar Ucapan & Doa</label>
+                  <input type="text" data-edit="guestBook.guestIntro">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: DESIGN & STYLINGS (Warna, Font, Frame, Animasi) -->
+          <div class="tab-panel" id="panel-design">
+            <div class="panel-section">
+              <h2>Palet Warna</h2>
+              <div class="form-grid">
+                <div class="field">
+                  <label>Warna Utama (Gold)</label>
+                  <input type="color" data-edit="style.colors.primary">
+                </div>
+                <div class="field">
+                  <label>Warna Secondary</label>
+                  <input type="color" data-edit="style.colors.secondary">
+                </div>
+                <div class="field full">
+                  <label>Warna Latar (Background)</label>
+                  <input type="color" data-edit="style.colors.background">
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <h2>Frame (Bingkai Hiasan)</h2>
+              <p class="section-desc">Pilih hiasan pinggir halaman yang sesuai dengan tema.</p>
+              <div class="asset-selector" id="frameSelector">
+                <div class="asset-option" data-value="none">
+                  <div class="asset-preview-box">None</div>
+                  <span>Tanpa Bingkai</span>
+                </div>
+                <div class="asset-option" data-value="lotus">
+                  <div class="asset-preview-box">Lotus</div>
+                  <span>Lotus Botanical (Tema #1)</span>
+                </div>
+                <div class="asset-option" data-value="gold-classic">
+                  <div class="asset-preview-box">Classic</div>
+                  <span>Classic Gold Double Line</span>
+                </div>
+                <div class="asset-option" data-value="minimal">
+                  <div class="asset-preview-box">Minimal</div>
+                  <span>Minimalist Border Line</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <h2>Animasi Latar (Effects)</h2>
+              <p class="section-desc">Pilih efek partikel melayang yang berjalan di latar belakang.</p>
+              <div class="asset-selector" id="animSelector">
+                <div class="asset-option" data-value="none">
+                  <div class="asset-preview-box">None</div>
+                  <span>Tanpa Efek</span>
+                </div>
+                <div class="asset-option" data-value="gold-rain">
+                  <div class="asset-preview-box">Rain</div>
+                  <span>Gold Rain Particles</span>
+                </div>
+                <div class="asset-option" data-value="falling-leaves">
+                  <div class="asset-preview-box">Leaves</div>
+                  <span>Gold Falling Leaves</span>
+                </div>
+              </div>
+              
+              <!-- Animation Detail Adjustments -->
+              <div class="animation-sliders form-grid" style="margin-top: 15px;">
+                <div class="field">
+                  <label>Density (Jumlah Partikel)</label>
+                  <div class="range-wrap">
+                    <input type="range" min="5" max="60" value="24" id="anim-density">
+                    <span class="range-val">24</span>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Speed (Kecepatan)</label>
+                  <div class="range-wrap">
+                    <input type="range" min="1" max="4" step="0.2" value="1" id="anim-speed">
+                    <span class="range-val">1x</span>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Size (Ukuran)</label>
+                  <div class="range-wrap">
+                    <input type="range" min="0.5" max="3" step="0.1" value="1" id="anim-size">
+                    <span class="range-val">1x</span>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Opacity (Transparansi)</label>
+                  <div class="range-wrap">
+                    <input type="range" min="0.1" max="1" step="0.05" value="0.75" id="anim-opacity">
+                    <span class="range-val">0.75</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: GUEST LIST MANAGER -->
+          <div class="tab-panel" id="panel-guests">
+            <div class="panel-section">
+              <h2>Nama Tamu Undangan</h2>
+              <p class="section-desc">Buat link personal khusus untuk setiap tamu agar nama mereka tertera secara personal.</p>
+              
+              <div class="form-grid">
+                <div class="field">
+                  <label>Sapaan Tamu</label>
+                  <input type="text" data-edit="guest.guestPrefix" placeholder="Kepada Yth.">
+                </div>
+                <div class="field">
+                  <label>Sapaan Kosong (Fallback)</label>
+                  <input type="text" data-edit="guest.guestFallback" placeholder="Bapak / Ibu / Saudara / i">
+                </div>
+              </div>
+              
+              <div class="guest-add-form" style="margin-top: 15px;">
+                <div class="field">
+                  <label>Tambah Tamu Baru</label>
+                  <div class="input-action-row">
+                    <input type="text" id="new-guest-name" placeholder="Contoh: Rian & Rekan Kerja">
+                    <button class="btn-primary" id="add-guest-btn">Tambah</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="guest-list-box" id="guest-admin-list">
+                <!-- Dynamic Guest Names -->
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: RSVP REPORT LIST -->
+          <div class="tab-panel" id="panel-rsvp">
+            <div class="panel-section">
+              <h2>Hasil Konfirmasi RSVP Tamu</h2>
+              <p class="section-desc">Berikut adalah daftar respon konfirmasi kehadiran yang diisi oleh tamu.</p>
+              
+              <div class="rsvp-stats" id="rsvp-stats-box">
+                <!-- Stats loaded here -->
+              </div>
+              
+              <div class="rsvp-list" id="rsvp-admin-list">
+                <!-- RSVP reports -->
+              </div>
+              
+              <button class="btn-danger full-width" id="clearRSVPsBtn" style="margin-top: 15px;">Hapus Semua Data RSVP</button>
+            </div>
+          </div>
+
+          <!-- TAB 5: DRAFT AND PUBLISH -->
+          <div class="tab-panel" id="panel-publish">
+            <div class="panel-section">
+              <h2>Terbitkan Undangan Digital</h2>
+              <p class="section-desc">Ganti slug alamat URL undangan pernikahan Anda agar mudah diakses.</p>
+              
+              <div class="form-grid">
+                <div class="field full">
+                  <label>Slug Alamat Alamat Web (URL)</label>
+                  <div class="input-action-row">
+                    <span class="url-prefix">platform.com/</span>
+                    <input type="text" id="publish-slug" placeholder="aulia-raka">
+                  </div>
+                </div>
+              </div>
+              
+              <div class="publish-action-box" style="margin-top: 25px;">
+                <button class="btn-primary full-width large" id="publishSaveBtn">TERBITKAN SEKARANG 🚀</button>
+              </div>
+              
+              <div class="published-links-container hidden" id="publishedResult">
+                <!-- Result card showing links -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- Right Panel: Viewport Mockup and Iframe Preview -->
+      <main class="preview-area">
+        <div class="viewport-shell device-mobile" id="previewViewport">
+          <div class="viewport-header">
+            <div class="camera"></div>
+            <div class="speaker"></div>
+          </div>
+          <div class="viewport-screen">
+            <iframe id="previewIframe" src="" allow="autoplay"></iframe>
+          </div>
+          <div class="viewport-footer">
+            <div class="home-indicator"></div>
+          </div>
+        </div>
+      </main>
+      
+    </div>
+  </div>
+
+  <!-- Floating Mobile Toggle Button -->
+  <button class="mobile-toggle-btn" id="mobilePreviewToggle">👁 Preview</button>
+
+  <!-- Toast Alert -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Load Platform Core Script files -->
+  <script src="../data/defaults.js?v=12"></script>
+  <script src="../services/rsvpService.js?v=12"></script>
+  <script src="../services/storageService.js?v=12"></script>
+  <script src="../services/publishService.js?v=12"></script>
+  <script src="app.js?v=12"></script>
+</body>
+</html>

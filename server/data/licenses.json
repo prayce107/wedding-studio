@@ -1,0 +1,32 @@
+[
+  {
+    "code": "LICENSE_A",
+    "name": "Wedding",
+    "category": "Pernikahan",
+    "description": "Undangan Pernikahan Premium"
+  },
+  {
+    "code": "LICENSE_B",
+    "name": "Khitan",
+    "category": "Khitanan",
+    "description": "Undangan Khitanan Modern"
+  },
+  {
+    "code": "LICENSE_C",
+    "name": "Birthday",
+    "category": "Ulang Tahun",
+    "description": "Undangan Ulang Tahun Anak"
+  },
+  {
+    "code": "LICENSE_D",
+    "name": "Aqiqah",
+    "category": "Aqiqah",
+    "description": "Undangan Aqiqah & Selapanan"
+  },
+  {
+    "code": "LICENSE_E",
+    "name": "Wisuda",
+    "category": "Wisuda",
+    "description": "Undangan Graduation / Wisuda"
+  }
+]

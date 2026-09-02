@@ -1,0 +1,1 @@
+window.GoldRainAnimation={init(c,s={}){c.innerHTML="";for(let i=0;i<(s.count||35);i++){const p=document.createElement("i");p.className="heritage-particle";p.style.left=Math.random()*100+"%";p.style.animationDelay=Math.random()*6+"s";p.style.animationDuration=4+Math.random()*5+"s";c.appendChild(p)}}};

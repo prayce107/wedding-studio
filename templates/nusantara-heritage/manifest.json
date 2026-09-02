@@ -1,0 +1,31 @@
+{
+  "id": "nusantara-heritage",
+  "title": "Nusantara Heritage",
+  "name": "Nusantara Heritage / Cultural Luxury",
+  "version": "1.0.0",
+  "category": "wedding",
+  "preview": "preview.svg",
+  "description": "Desain bernuansa budaya tradisional Indonesia (Jawa, Sunda, Bali, Minang, dll.) dengan gerbang heritage megah, ornamen etnik premium, galeri foto, peta lokasi, dan RSVP.",
+  "tags": ["Cultural Theme", "Heritage Gate", "Traditional Ornament", "Interactive Envelope", "Timeline Story", "Wishes"],
+  "features": [
+    "couple",
+    "event",
+    "story",
+    "gallery",
+    "guest",
+    "music",
+    "venue",
+    "gift",
+    "rsvp",
+    "live",
+    "guestBook"
+  ],
+  "adapter": "adapter.js",
+  "editable": {
+    "colors": true,
+    "fonts": true,
+    "frames": true,
+    "decorations": true,
+    "animations": true
+  }
+}

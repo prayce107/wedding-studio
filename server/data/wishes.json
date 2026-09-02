@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "created_at": "2026-08-17T08:07:04.167Z",
+    "invitation_id": 1,
+    "name": "Andri Prayoga",
+    "message": "Lancar ya bro acaranya, sampai jumpa di lokasi!",
+    "status": "approved"
+  },
+  {
+    "id": 2,
+    "created_at": "2026-08-17T08:07:04.168Z",
+    "invitation_id": 1,
+    "name": "Budi",
+    "message": "Selamat berbahagia untuk kalian berdua!",
+    "status": "approved"
+  }
+]

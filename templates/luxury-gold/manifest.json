@@ -1,0 +1,31 @@
+{
+  "id": "luxury-gold",
+  "title": "Luxury Gold",
+  "name": "Luxury Gold / Parallax Lotus",
+  "version": "1.0.0",
+  "category": "wedding",
+  "preview": "preview.svg",
+  "description": "Desain ultra premium bernuansa emas mewah dengan pembuka amplop 3D parallax interaktif, dekorasi lotus, galeri foto, peta lokasi, dan konfirmasi kehadiran RSVP.",
+  "tags": ["Amplop 3D", "Lotus Frame", "Gold Rain", "Timeline Story", "Wishes", "Gifts Angpou"],
+  "features": [
+    "couple",
+    "event",
+    "story",
+    "gallery",
+    "guest",
+    "music",
+    "venue",
+    "gift",
+    "rsvp",
+    "live",
+    "guestBook"
+  ],
+  "adapter": "adapter.js",
+  "editable": {
+    "colors": true,
+    "fonts": true,
+    "frames": true,
+    "decorations": true,
+    "animations": true
+  }
+}

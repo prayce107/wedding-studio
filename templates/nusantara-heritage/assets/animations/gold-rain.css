@@ -1,0 +1,1 @@
+#animation-container{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden}.heritage-particle{position:absolute;width:3px;height:3px;background:#cba56a;border-radius:50%;animation:fall 6s linear infinite;opacity:.55}@keyframes fall{from{transform:translateY(-20px)}to{transform:translateY(110vh)}}

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650">
+<rect width="900" height="650" fill="#eef2eb"/>
+<circle cx="110" cy="120" r="120" fill="#dce8f4" opacity=".8"/>
+<circle cx="790" cy="500" r="150" fill="#dce8d4" opacity=".8"/>
+<rect x="285" y="35" width="330" height="580" rx="38" fill="#fff" stroke="#d9e2ef" stroke-width="3"/>
+<rect x="320" y="70" width="260" height="470" rx="28" fill="#f8faf6"/>
+<circle cx="450" cy="230" r="90" fill="#dbe7f5"/>
+<circle cx="450" cy="230" r="72" fill="#9db7d8"/>
+<text x="450" y="105" text-anchor="middle" font-family="Georgia" font-size="14" fill="#4f76b8">UNDANGAN PERNIKAHAN</text>
+<text x="450" y="360" text-anchor="middle" font-family="Georgia" font-size="34" fill="#2f568f">Ari &amp; Selvi</text>
+<text x="450" y="390" text-anchor="middle" font-family="Arial" font-size="11" fill="#7b8797">Kepada Yth. Nama Tamu</text>
+<rect x="395" y="415" width="110" height="32" rx="16" fill="#4f76b8"/>
+<text x="450" y="436" text-anchor="middle" font-family="Arial" font-size="9" fill="#fff">OPEN INVITATION</text>
+<g fill="#73927f" opacity=".55">
+<ellipse cx="190" cy="120" rx="18" ry="60" transform="rotate(-35 190 120)"/>
+<ellipse cx="145" cy="155" rx="15" ry="52" transform="rotate(35 145 155)"/>
+<ellipse cx="730" cy="150" rx="18" ry="60" transform="rotate(35 730 150)"/>
+<ellipse cx="770" cy="110" rx="15" ry="52" transform="rotate(-35 770 110)"/>
+</g>
+<g fill="#4f76b8" opacity=".55">
+<circle cx="120" cy="520" r="30"/><circle cx="785" cy="90" r="26"/><circle cx="95" cy="180" r="20"/>
+</g>
+<text x="450" y="635" text-anchor="middle" font-family="Arial" font-size="14" fill="#4f76b8">BLUE BOTANICAL • MOBILE FLORAL</text>
+</svg>

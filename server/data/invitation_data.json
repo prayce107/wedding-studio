@@ -1,0 +1,562 @@
+[
+  {
+    "id": 1,
+    "created_at": "2026-08-17T08:07:04.163Z",
+    "invitation_id": 1,
+    "content": {
+      "theme": {
+        "primaryColor": "#d4af37",
+        "bgColor": "#111111",
+        "textColor": "#f5f5f5",
+        "fontFamily": "Outfit",
+        "buttonStyle": "rounded-glass",
+        "showAnimations": true
+      },
+      "opening": {
+        "title": "THE WEDDING OF",
+        "couple": "Sabil & Maul",
+        "date": "2026-12-20"
+      },
+      "mempelai": {
+        "pria": {
+          "namaLengkap": "Sabil Akbar Ramadhan",
+          "namaPanggilan": "Sabil",
+          "foto": "",
+          "bio": "Putra pertama dari pasangan Bapak H. Ahmad & Ibu Hj. Aminah. Sabil adalah seorang software engineer yang penuh semangat dan menyukai petualangan.",
+          "anakKe": "1",
+          "ortu": "Bapak H. Ahmad & Ibu Hj. Aminah",
+          "instagram": "sabil_akbar",
+          "facebook": "sabil.akbar",
+          "tiktok": ""
+        },
+        "wanita": {
+          "namaLengkap": "Maulida Rahma Syifa",
+          "namaPanggilan": "Maul",
+          "foto": "",
+          "bio": "Putri bungsu dari pasangan Bapak Dr. Hermawan & Ibu Dra. Retno. Maulida adalah seorang desainer interior yang mencintai seni dan tanaman hijau.",
+          "anakKe": "2",
+          "ortu": "Bapak Dr. Hermawan & Ibu Dra. Retno",
+          "instagram": "maul_syifa",
+          "facebook": "",
+          "tiktok": ""
+        }
+      },
+      "acara": [
+        {
+          "nama": "Akad Nikah",
+          "tanggal": "2026-12-20",
+          "jam": "08:00 - 10:00 WIB",
+          "lokasi": "Masjid Agung Al-Hikmah",
+          "alamat": "Jl. Pemuda No. 12, Jakarta Pusat",
+          "mapsUrl": "https://maps.google.com"
+        },
+        {
+          "nama": "Resepsi Nikah",
+          "tanggal": "2026-12-20",
+          "jam": "11:00 - 16:00 WIB",
+          "lokasi": "Grand Ballroom Hotel Mulia",
+          "alamat": "Jl. Asia Afrika, Senayan, Jakarta Selatan",
+          "mapsUrl": "https://maps.google.com"
+        }
+      ],
+      "countdown": "2026-12-20T08:00:00",
+      "quotes": {
+        "openingText": "Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri hari istimewa kami.",
+        "verseText": "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.",
+        "verseSource": "QS. Ar-Rum: 21"
+      },
+      "liveStreaming": {
+        "enabled": true,
+        "youtubeUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "meetingUrl": "https://zoom.us",
+        "keterangan": "Streaming Akad Nikah akan disiarkan langsung melalui pemutar di bawah ini mulai pukul 08:00 WIB."
+      },
+      "music": {
+        "id": "romantic-acoustic",
+        "name": "Acoustic Wedding Love",
+        "url": "/templates/music/romantic-wedding.mp3",
+        "autoplay": true
+      },
+      "gallery": [
+        {
+          "url": "https://picsum.photos/id/1013/800/1000",
+          "order": 0
+        },
+        {
+          "url": "https://picsum.photos/id/1015/800/1000",
+          "order": 1
+        },
+        {
+          "url": "https://picsum.photos/id/1016/800/1000",
+          "order": 2
+        },
+        {
+          "url": "https://picsum.photos/id/1018/800/1000",
+          "order": 3
+        }
+      ],
+      "story": [
+        {
+          "tahun": "2021",
+          "judul": "Pertemuan Pertama",
+          "cerita": "Kami pertama kali bertemu di sebuah perpustakaan kota. Buku yang kami cari kebetulan sama, dan dari sanalah percakapan awal kami bermula.",
+          "foto": ""
+        },
+        {
+          "tahun": "2023",
+          "judul": "Memulai Komitmen",
+          "cerita": "Setelah dua tahun berteman baik dan saling mendukung karir masing-masing, kami sepakat untuk berkomitmen menuju jenjang yang lebih serius.",
+          "foto": ""
+        },
+        {
+          "tahun": "2025",
+          "judul": "Pertunangan",
+          "cerita": "Di hadapan keluarga besar, kami melangsungkan lamaran resmi. Hari yang penuh haru dan tawa menyatukan mimpi kami berdua.",
+          "foto": ""
+        }
+      ],
+      "gift": {
+        "accounts": [
+          {
+            "bank": "BCA",
+            "noRek": "1234567890",
+            "namaPenerima": "Sabil Akbar R",
+            "qrCode": ""
+          },
+          {
+            "bank": "Mandiri",
+            "noRek": "0987654321",
+            "namaPenerima": "Maulida R S",
+            "qrCode": ""
+          }
+        ],
+        "shippingAddress": {
+          "enabled": true,
+          "penerima": "Sabil & Maul",
+          "noHp": "081234567890",
+          "alamat": "Jl. Kemang Raya No. 45, Mampang Prapatan, Jakarta Selatan, 12730"
+        }
+      }
+    }
+  },
+  {
+    "id": 2,
+    "created_at": "2026-08-17T08:45:38.739Z",
+    "invitation_id": 2,
+    "content": {
+      "theme": {
+        "primaryColor": "#8a2be2",
+        "bgColor": "#ffffff",
+        "textColor": "#333333",
+        "fontFamily": "Inter",
+        "buttonStyle": "rounded",
+        "showAnimations": true
+      },
+      "opening": {
+        "title": "UNDANGAN",
+        "couple": "nurul dan rizal",
+        "date": "2026-08-31"
+      },
+      "mempelai": {
+        "pria": {
+          "namaLengkap": "",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": ""
+        },
+        "wanita": {
+          "namaLengkap": "",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": ""
+        }
+      },
+      "acara": [],
+      "countdown": "2026-08-31T09:00:00",
+      "music": {
+        "id": "",
+        "name": "",
+        "url": "",
+        "autoplay": true
+      },
+      "gallery": [],
+      "story": [],
+      "gift": {
+        "accounts": []
+      }
+    }
+  },
+  {
+    "id": 3,
+    "created_at": "2026-08-17T09:26:45.610Z",
+    "invitation_id": 3,
+    "content": {
+      "theme": {
+        "primaryColor": "#f8f6f7",
+        "bgColor": "#0a0002",
+        "textColor": "#233e30",
+        "fontFamily": "Inter",
+        "buttonStyle": "rounded-glass",
+        "showAnimations": true,
+        "cardBgColor": "#c50202",
+        "cardTextColor": "#763232",
+        "fontFamilyTitle": "Outfit",
+        "animationType": "bubbles",
+        "mempelaiStyle": "scrapbook"
+      },
+      "opening": {
+        "title": "UNDANGAN",
+        "couple": "rehan dan rizal",
+        "date": "2026-08-31",
+        "coverPhoto": "/uploads/file-1786958825978-363093837.jfif",
+        "coverStyle": "full-bg"
+      },
+      "mempelai": {
+        "pria": {
+          "namaLengkap": "leon",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": "",
+          "foto": "/uploads/file-1786958904590-396872738.jfif"
+        },
+        "wanita": {
+          "namaLengkap": "aada",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": "",
+          "foto": "/uploads/file-1786958913198-653874590.jfif"
+        }
+      },
+      "acara": [
+        {
+          "nama": "Acara Baru",
+          "tanggal": "2026-07-29",
+          "jam": "",
+          "lokasi": "",
+          "alamat": "",
+          "mapsUrl": ""
+        }
+      ],
+      "countdown": "2026-08-31T09:00:00",
+      "music": {
+        "id": "",
+        "name": "",
+        "url": "",
+        "autoplay": true
+      },
+      "gallery": [],
+      "story": [],
+      "gift": {
+        "accounts": []
+      },
+      "quotes": {
+        "verseText": "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.",
+        "verseSource": "QS. Ar-Rum: 21"
+      }
+    },
+    "updated_at": "2026-08-17T09:29:58.736Z"
+  },
+  {
+    "id": 4,
+    "created_at": "2026-08-17T16:44:55.819Z",
+    "invitation_id": 4,
+    "content": {
+      "theme": {
+        "primaryColor": "#8a2be2",
+        "bgColor": "#ffffff",
+        "textColor": "#333333",
+        "fontFamily": "Inter",
+        "buttonStyle": "rounded",
+        "showAnimations": true
+      },
+      "opening": {
+        "title": "UNDANGAN",
+        "couple": "jihyo & valerian",
+        "date": "2026-08-31"
+      },
+      "mempelai": {
+        "pria": {
+          "namaLengkap": "",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": ""
+        },
+        "wanita": {
+          "namaLengkap": "",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": ""
+        }
+      },
+      "acara": [],
+      "countdown": "2026-08-31T09:00:00",
+      "music": {
+        "id": "",
+        "name": "",
+        "url": "",
+        "autoplay": true
+      },
+      "gallery": [],
+      "story": [],
+      "gift": {
+        "accounts": []
+      }
+    }
+  },
+  {
+    "id": 5,
+    "created_at": "2026-08-17T16:59:32.539Z",
+    "invitation_id": 5,
+    "content": {
+      "theme": {
+        "primaryColor": "#d4af37",
+        "bgColor": "#111111",
+        "textColor": "#f5f5f5",
+        "fontFamily": "Inter",
+        "buttonStyle": "rounded-glass",
+        "showAnimations": true,
+        "mempelaiStyle": "card",
+        "galleryStyle": "masonry",
+        "fontFamilyTitle": "Inter",
+        "animationType": "rose"
+      },
+      "opening": {
+        "title": "UNDANGAN",
+        "couple": "vale & jihyo",
+        "date": "2026-08-31",
+        "coverPhoto": "/uploads/file-1787001509689-361029041.jpg",
+        "topText": "the weading of",
+        "coverStyle": "full-bg"
+      },
+      "mempelai": {
+        "pria": {
+          "namaLengkap": "valerian permana sukma",
+          "namaPanggilan": "rian",
+          "bio": "halu lah setinggi mungkin",
+          "ortu": "sukma & siti",
+          "foto": "/uploads/file-1786998185060-11433181.png"
+        },
+        "wanita": {
+          "namaLengkap": "park jihyo",
+          "namaPanggilan": "jihyo",
+          "bio": "cantik adalah segalanya",
+          "ortu": "asep & jubaedah",
+          "foto": "/uploads/file-1786998213866-787888584.jpg"
+        }
+      },
+      "acara": [
+        {
+          "nama": "akad",
+          "tanggal": "2026-08-31",
+          "jam": "09:00 - selesai",
+          "lokasi": "aula",
+          "alamat": "jl sukamaju",
+          "mapsUrl": "https://maps.app.goo.gl/6QA2UE6tBVSFQivZ7"
+        }
+      ],
+      "countdown": "2026-08-31T08:00:00",
+      "music": {
+        "id": "custom",
+        "name": "Kasih Putih (Instrumental Saxophone) - Forte Entertainment.mp3",
+        "url": "/uploads/file-1786998300708-970478201.mp3",
+        "autoplay": true
+      },
+      "gallery": [
+        {
+          "url": "/uploads/file-1786998312061-666826559.jpg",
+          "order": 0
+        },
+        {
+          "url": "/uploads/file-1786998315100-291053545.jpg",
+          "order": 1
+        }
+      ],
+      "story": [
+        {
+          "tahun": "2022",
+          "judul": "kisah bertemu dengan bidadari",
+          "cerita": "saat saya, rian liburan ke bali saya tidak sengaja berpapasan dengan wanita cantik yaitu neng jihyo, dan tidak sengaja menyenggol dia, dan akhirnya kita bertatapan, disitu lah saya memberanikan diri untuk berkenalan dan yap saya pun meminta instagram dia dan akhirnya di terima,walaupun pertemuan kita tidak disengaja tapi cinta kita disengaja",
+          "foto": "/uploads/file-1786998426440-891570570.jpg"
+        }
+      ],
+      "gift": {
+        "accounts": [
+          {
+            "bank": "bca",
+            "noRek": "32423423424",
+            "namaPenerima": "Valerian Permana Sukma",
+            "qrCode": ""
+          }
+        ],
+        "shippingAddress": {
+          "enabled": true,
+          "penerima": "valerian",
+          "noHp": "08234242533242",
+          "alamat": "jl sukamaju no 454"
+        }
+      },
+      "quotes": {
+        "verseText": "Pernikahan bukanlah akhir dari kisah cinta, melainkan awal dari sebuah perjalanan indah menuju kebahagiaan abadi yang kita ukir bersama neng jihyo.",
+        "verseSource": "Kutipan Romantis"
+      }
+    },
+    "updated_at": "2026-08-17T21:32:01.755Z"
+  },
+  {
+    "id": 6,
+    "created_at": "2026-08-17T20:56:04.304Z",
+    "invitation_id": 6,
+    "content": {
+      "theme": {
+        "primaryColor": "#8a2be2",
+        "bgColor": "#ffffff",
+        "textColor": "#333333",
+        "fontFamily": "Inter",
+        "buttonStyle": "rounded",
+        "showAnimations": true
+      },
+      "opening": {
+        "title": "UNDANGAN",
+        "couple": "tftufg",
+        "date": "2026-08-31"
+      },
+      "mempelai": {
+        "pria": {
+          "namaLengkap": "",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": ""
+        },
+        "wanita": {
+          "namaLengkap": "",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": ""
+        }
+      },
+      "acara": [],
+      "countdown": "2026-08-31T09:00:00",
+      "music": {
+        "id": "",
+        "name": "",
+        "url": "",
+        "autoplay": true
+      },
+      "gallery": [],
+      "story": [],
+      "gift": {
+        "accounts": []
+      }
+    }
+  },
+  {
+    "id": 7,
+    "created_at": "2026-08-19T11:20:15.933Z",
+    "invitation_id": 7,
+    "content": {
+      "theme": {
+        "primaryColor": "#8a2be2",
+        "bgColor": "#ffffff",
+        "textColor": "#333333",
+        "fontFamily": "Inter",
+        "buttonStyle": "rounded",
+        "showAnimations": true
+      },
+      "opening": {
+        "title": "UNDANGAN",
+        "couple": "dika & asep",
+        "date": "2026-09-02"
+      },
+      "mempelai": {
+        "pria": {
+          "namaLengkap": "",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": ""
+        },
+        "wanita": {
+          "namaLengkap": "",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": ""
+        }
+      },
+      "acara": [],
+      "countdown": "2026-09-02T09:00:00",
+      "music": {
+        "id": "",
+        "name": "",
+        "url": "",
+        "autoplay": true
+      },
+      "gallery": [],
+      "story": [],
+      "gift": {
+        "accounts": []
+      }
+    },
+    "updated_at": "2026-08-19T11:20:54.590Z"
+  },
+  {
+    "id": 8,
+    "created_at": "2026-08-19T11:40:49.008Z",
+    "invitation_id": 8,
+    "content": {
+      "theme": {
+        "primaryColor": "#d4af37",
+        "bgColor": "#111111",
+        "textColor": "#f5f5f5",
+        "fontFamily": "Inter",
+        "buttonStyle": "rounded",
+        "showAnimations": true
+      },
+      "opening": {
+        "title": "UNDANGAN",
+        "couple": "baim & baa",
+        "date": "2026-09-02",
+        "topText": "halo dek"
+      },
+      "mempelai": {
+        "pria": {
+          "namaLengkap": "",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": ""
+        },
+        "wanita": {
+          "namaLengkap": "",
+          "namaPanggilan": "",
+          "bio": "",
+          "ortu": ""
+        }
+      },
+      "acara": [
+        {
+          "nama": "Acara Baru",
+          "tanggal": "",
+          "jam": "",
+          "lokasi": "yyfy",
+          "alamat": "gfyug",
+          "mapsUrl": ""
+        }
+      ],
+      "countdown": "2026-09-02T09:00:00",
+      "music": {
+        "id": "",
+        "name": "",
+        "url": "",
+        "autoplay": true
+      },
+      "gallery": [],
+      "story": [],
+      "gift": {
+        "accounts": []
+      },
+      "quotes": {
+        "verseText": "Semoga Allah menghimpun yang berserak dari keduanya, memberkati mereka berdua dan meningkatkan kualitas keturunan mereka sebagai pembuka pintu rahmat dan sumber ketenteraman.",
+        "verseSource": "Doa Restu Pernikahan"
+      }
+    },
+    "updated_at": "2026-08-19T11:56:48.442Z"
+  }
+]

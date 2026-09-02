@@ -1,0 +1,8 @@
+<svg viewBox="0 0 300 520" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gold Classic Left side border and corners -->
+  <path d="M15 15 L280 15 M15 15 L15 505 M15 505 L280 505" fill="none" stroke="#d5a15d" stroke-width="2" opacity="0.8"/>
+  <path d="M22 22 L260 22 M22 22 L22 498 M22 498 L260 498" fill="none" stroke="#d5a15d" stroke-width="0.8" opacity="0.6"/>
+  <!-- Corner ornament -->
+  <path d="M15 45 L45 15 M15 60 L60 15 M30 30 L35 35 L40 30" fill="none" stroke="#d5a15d" stroke-width="1" opacity="0.9"/>
+  <path d="M15 475 L45 505 M15 460 L60 505 M30 490 L35 485 L40 490" fill="none" stroke="#d5a15d" stroke-width="1" opacity="0.9"/>
+</svg>

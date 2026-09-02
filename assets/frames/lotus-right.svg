@@ -1,0 +1,32 @@
+<svg viewBox="0 0 300 520" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="stemGR" x1="1" y1="0" x2="0" y2="1"><stop stop-color="#f4d89e"/><stop offset=".5" stop-color="#c68d3d"/><stop offset="1" stop-color="#6d461f"/></linearGradient>
+    <radialGradient id="petalGR" cx="58%" cy="28%"><stop stop-color="#fff2c8"/><stop offset=".28" stop-color="#e9bd73"/><stop offset=".72" stop-color="#b8792d"/><stop offset="1" stop-color="#714719"/></radialGradient>
+    <linearGradient id="leafGR" x1="1" y1="0" x2="0" y2="1"><stop stop-color="#f5d99f"/><stop offset=".5" stop-color="#c58a3c"/><stop offset="1" stop-color="#71471d"/></linearGradient>
+    <filter id="softGold"><feGaussianBlur stdDeviation=".45"/></filter>
+  </defs>
+  <path class="stem" fill="none" stroke="url(#stemGR)" stroke-width="1.35" stroke-linecap="round" opacity=".9" d="M260 0 C200 74 240 142 196 211 C153 280 196 360 155 520"/>
+  <path class="twig" fill="none" stroke="#bc8339" stroke-width="1.15" stroke-linecap="round" opacity=".95" d="M222 104 Q257 87 282 59 M212 164 Q167 145 129 108 M192 250 Q237 231 269 202 M181 331 Q136 312 98 276 M171 410 Q208 396 239 371"/>
+  <g class="leaves">
+    <path d="M282 59 C298 37 292 12 265 11 C257 31 264 51 282 59Z" fill="url(#leafGR)" stroke="#f2cf91" stroke-width=".45" opacity=".88" filter="url(#softGold)"/>
+    <path d="M129 108 C112 82 87 82 75 103 C90 124 111 127 129 108Z" fill="url(#leafGR)" stroke="#f2cf91" stroke-width=".45" opacity=".88" filter="url(#softGold)"/>
+    <path d="M269 202 C290 182 287 157 261 153 C248 175 253 193 269 202Z" fill="url(#leafGR)" stroke="#f2cf91" stroke-width=".45" opacity=".88" filter="url(#softGold)"/>
+    <path d="M98 276 C78 252 53 254 44 277 C60 296 82 297 98 276Z" fill="url(#leafGR)" stroke="#f2cf91" stroke-width=".45" opacity=".88" filter="url(#softGold)"/>
+    <path d="M239 371 C257 349 252 327 227 323 C215 345 222 363 239 371Z" fill="url(#leafGR)" stroke="#f2cf91" stroke-width=".45" opacity=".88" filter="url(#softGold)"/>
+  </g>
+  <g class="lotus" transform="translate(194 150)">
+    <path d="M0 28 C-38 18 -56 -12 -43 -37 C-20 -35 -5 -17 0 8 C5 -17 20 -35 43 -37 C56 -12 38 18 0 28Z" fill="url(#petalGR)"/>
+    <path d="M0 28 C-23 6 -28 -25 -10 -48 C8 -36 12 -11 0 28Z" fill="url(#petalGR)" transform="rotate(-28)"/>
+    <path d="M0 28 C23 6 28 -25 10 -48 C-8 -36 -12 -11 0 28Z" fill="url(#petalGR)" transform="rotate(28)"/>
+    <path d="M0 25 C-18 10 -18 -18 0 -34 C18 -18 18 10 0 25Z" fill="#f6d99c" opacity=".88"/>
+    <ellipse cx="0" cy="27" rx="13" ry="8" fill="#6e451c"/>
+    <circle cx="0" cy="24" r="4" fill="#fff0b8"/>
+  </g>
+  <g class="lotus small" transform="translate(165 335) scale(.58)">
+    <path d="M0 28 C-38 18 -56 -12 -43 -37 C-20 -35 -5 -17 0 8 C5 -17 20 -35 43 -37 C56 -12 38 18 0 28Z" fill="url(#petalGR)"/>
+    <path d="M0 28 C-23 6 -28 -25 -10 -48 C8 -36 12 -11 0 28Z" fill="url(#petalGR)" transform="rotate(-28)"/>
+    <path d="M0 28 C23 6 28 -25 10 -48 C-8 -36 -12 -11 0 28Z" fill="url(#petalGR)" transform="rotate(28)"/>
+    <path d="M0 25 C-18 10 -18 -18 0 -34 C18 -18 18 10 0 25Z" fill="#f6d99c" opacity=".88"/>
+    <ellipse cx="0" cy="27" rx="13" ry="8" fill="#6e451c"/><circle cx="0" cy="24" r="4" fill="#fff0b8"/>
+  </g>
+</svg>

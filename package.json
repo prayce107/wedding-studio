@@ -1,0 +1,26 @@
+{
+  "name": "wedding-studio-platform",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Premium Digital Invitation Platform with Template Engine and Real-time Builder",
+  "main": "app/index.html",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "concurrently \"npm run server\" \"vite\"",
+    "server": "node server/index.js"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "concurrently": "^10.0.5",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "googleapis": "^176.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.3.0",
+    "puppeteer-core": "^25.8.0"
+  }
+}

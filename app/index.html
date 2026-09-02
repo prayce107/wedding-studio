@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Wedding Studio — Pembuat Undangan Pernikahan Premium</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090706;
+      --bg2: #120d0a;
+      --gold: #d5a15d;
+      --gold-light: #f5d59d;
+      --cream: #fff8ed;
+      --muted: #a98d73;
+      --border: rgba(213, 161, 93, 0.2);
+      --ease: cubic-bezier(.22, .75, .18, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: 'Outfit', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    h1, h2, h3 {
+      font-family: 'Playfair Display', serif;
+    }
+    
+    /* Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 {
+      font-size: 24px;
+      letter-spacing: 2px;
+      color: var(--gold);
+    }
+    
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+      background: radial-gradient(circle at 50% 30%, rgba(213, 161, 93, 0.08), transparent 50%);
+    }
+    .hero h2 {
+      font-size: clamp(32px, 5vw, 48px);
+      line-height: 1.2;
+      margin-bottom: 12px;
+      color: var(--cream);
+    }
+    .hero p {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 24px;
+      line-height: 1.6;
+    }
+    
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      border-radius: 99px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s var(--ease);
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: #120d0a;
+      border: 0;
+      box-shadow: 0 4px 15px rgba(213, 161, 93, 0.2);
+    }
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(213, 161, 93, 0.4);
+    }
+    .btn-outline {
+      border: 1px solid var(--border);
+      color: var(--gold-light);
+      background: transparent;
+    }
+    .btn-outline:hover {
+      background: rgba(213, 161, 93, 0.08);
+      border-color: var(--gold);
+    }
+    .btn-danger {
+      border: 1px solid rgba(166, 95, 95, 0.3);
+      color: #e9b5b5;
+      background: transparent;
+    }
+    .btn-danger:hover {
+      background: rgba(166, 95, 95, 0.1);
+    }
+    
+    /* Templates Section */
+    .section-title {
+      font-size: 24px;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      color: var(--gold);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+    
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      transition: all 0.3s var(--ease);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(213, 161, 93, 0.4);
+      box-shadow: 0 15px 40px rgba(213, 161, 93, 0.1);
+    }
+    
+    .card-preview {
+      height: 180px;
+      background: linear-gradient(135deg, #2b1d16, #0c0806);
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .card-preview-art {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+    
+    .card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .card-body h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: var(--cream);
+    }
+    .card-body p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 15px;
+      flex: 1;
+    }
+    .card-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+    .feature-tag {
+      font-size: 9px;
+      background: rgba(213, 161, 93, 0.08);
+      color: var(--gold-light);
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(213, 161, 93, 0.12);
+    }
+    
+    /* Draft List */
+    .draft-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .draft-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .draft-info h4 {
+      font-size: 15px;
+      color: var(--cream);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .draft-info .slug-link {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    
+    .status-badge {
+      font-size: 8px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .status-badge.draft { background: rgba(213, 161, 93, 0.1); color: var(--gold); }
+    .status-badge.pub { background: rgba(89, 102, 76, 0.2); color: #a3c285; }
+
+    .draft-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    /* Modal Dialog */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(5, 3, 2, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      place-items: center;
+      padding: 20px;
+    }
+    .modal.show { display: grid; }
+    
+    .modal-content {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: min(440px, 100%);
+      padding: 24px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    }
+    
+    .modal-content h3 {
+      font-size: 18px;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    .field label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+    }
+    .field input {
+      width: 100%;
+      background: #080604;
+      border: 1px solid var(--border);
+      color: var(--cream);
+      padding: 11px 14px;
+      border-radius: 8px;
+      outline: none;
+      font-size: 13px;
+    }
+    .field input:focus {
+      border-color: var(--gold);
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    /* Error Page Style */
+    .error-page {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .error-box h1 { font-size: 80px; color: var(--gold); }
+    .error-box h2 { font-size: 24px; margin-bottom: 12px; }
+    .error-box p { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+  <!-- Router Target Container -->
+  <div id="appShell">
+    
+    <!-- MAIN PLATFORM LANDING DASHBOARD -->
+    <div class="container">
+      
+      <!-- Top header -->
+      <header>
+        <h1>UNDANGAN LAB</h1>
+        <div style="display: flex; align-items: center;">
+          <span id="welcomeUser" style="margin-right: 15px; font-size: 13px; color: var(--gold-light);"></span>
+          <button class="btn btn-outline" id="logoutBtn" style="margin-right: 10px; padding: 10px 16px; font-size: 11px;">Logout</button>
+          <button class="btn btn-gold" id="newInvitationBtn">+ Buat Undangan</button>
+        </div>
+      </header>
+      
+      <!-- Hero Intro -->
+      <section class="hero">
+        <h2>Desain Premium Undangan Digital Pernikahan</h2>
+        <p>Pilih template premium, isi data mempelai Anda secara real-time, dan bagikan web undangan digital dalam hitungan menit.</p>
+      </section>
+
+      <!-- Template Library -->
+      <section class="templates">
+        <h2 class="section-title">Library Template Desain</h2>
+        <div class="grid" id="templatesGrid">
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--muted)">
+            Memuat daftar template...
+          </div>
+        </div>
+      </section>
+
+      <!-- Active Draft Manager -->
+      <section class="drafts">
+        <h2 class="section-title">Undangan Saya</h2>
+        <div class="draft-list" id="draftsBox">
+          <!-- Draft items load dynamically here -->
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Create Invitation Modal Dialog -->
+    <div class="modal" id="createModal">
+      <div class="modal-content">
+        <h3>Buat Undangan Pernikahan</h3>
+        <div class="field">
+          <label>Slug Nama Alamat Web (URL)</label>
+          <input type="text" id="new-slug" placeholder="contoh: budi-wati">
+          <p style="font-size: 10px; color: var(--muted); margin-top: 4px;">Alamat web Anda akan menjadi: platform.com/?invite=slug</p>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-outline" id="closeModalBtn">Batal</button>
+          <button class="btn btn-gold" id="confirmCreateBtn">Buat & Edit</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Load Platform Services -->
+  <script src="data/defaults.js?v=13"></script>
+  <script src="services/publishService.js?v=13"></script>
+  <script src="assets/js/auth.js"></script>
+  <script>
+    (() => {
+      "use strict";
+
+      const params = new URLSearchParams(window.location.search);
+      const inviteSlug = params.get("invite");
+
+      // 1. ROUTER VIEW: CHECK IF DISPLAYING PUBLIC INVITATION
+      if (inviteSlug) {
+        renderPublicInvitation(inviteSlug.trim().toLowerCase());
+        return;
+      }
+
+      // 2. ROUTER VIEW: PLATFORM DASHBOARD/BUILDER SELECTOR
+      if (!window.checkAuth()) return;
+      initDashboard();
+
+      async function renderPublicInvitation(slug) {
+        const shell = document.getElementById("appShell");
+        shell.innerHTML = '<div style="display:grid; place-items:center; min-height:100vh; font-size:14px; color:var(--muted)">Memuat undangan...</div>';
+
+        // Load configuration
+        const pub = await window.publishService.getPublished(slug);
+        if (!pub) {
+          // Fallback check: is it in drafts? (for direct preview testing)
+          const draft = await window.publishService.getDraft(slug);
+          if (draft) {
+            loadTemplateIframe(shell, draft);
+          } else {
+            showNotFound(slug);
+          }
+          return;
+        }
+
+        loadTemplateIframe(shell, pub);
+      }
+
+      function loadTemplateIframe(container, invitation) {
+        container.innerHTML = "";
+        
+        const iframe = document.createElement("iframe");
+        iframe.setAttribute("allow", "autoplay");
+        // Forward URL query parameters like ?to=Name
+        iframe.src = `templates/${invitation.templateId}/index.html${window.location.search}`;
+        iframe.style.position = "fixed";
+        iframe.style.top = "0";
+        iframe.style.left = "0";
+        iframe.style.width = "100vw";
+        iframe.style.height = "100vh";
+        iframe.style.border = "0";
+        iframe.style.zIndex = "99999";
+        
+        // Store properties for postMessage handshake
+        iframe.invitationData = invitation.data;
+        iframe.invitationAssetsPrefix = "assets";
+        
+        iframe.onload = () => {
+          // Send data via postMessage to bypass CORS in file:// protocol
+          const message = {
+            type: "RENDER_TEMPLATE",
+            data: invitation.data,
+            assetsPrefix: "assets"
+          };
+          iframe.contentWindow.postMessage(message, "*");
+
+          try {
+            // Fallback for same-origin
+            iframe.contentWindow.invitationData = invitation.data;
+            iframe.contentWindow.invitationAssetsPrefix = "assets"; // relative to parent index.html
+            
+            if (iframe.contentWindow.TemplateAdapter) {
+              iframe.contentWindow.TemplateAdapter.render(iframe.contentWindow.document, invitation.data);
+            }
+          } catch (e) {
+            // Ignore cross-origin frame access warnings
+          }
+        };
+        
+        document.body.style.overflow = "hidden";
+        container.appendChild(iframe);
+      }
+
+      // Handshake receiver for template iframe readiness
+      window.addEventListener("message", (e) => {
+        if (e.data && e.data.type === "TEMPLATE_READY") {
+          const iframes = document.querySelectorAll("iframe");
+          iframes.forEach(iframe => {
+            if (iframe.contentWindow === e.source && iframe.invitationData) {
+              iframe.contentWindow.postMessage({
+                type: "RENDER_TEMPLATE",
+                data: iframe.invitationData,
+                assetsPrefix: iframe.invitationAssetsPrefix || "assets"
+              }, "*");
+            }
+          });
+        }
+      });
+
+      function showNotFound(slug) {
+        const shell = document.getElementById("appShell");
+        shell.innerHTML = `
+          <div class="error-page">
+            <div class="error-box">
+              <h1>404</h1>
+              <h2>Undangan Tidak Aktif</h2>
+              <p>Alamat web undangan digital "<strong>${slug}</strong>" tidak terdaftar atau belum diterbitkan.</p>
+              <a href="index.html" class="btn btn-gold">Buat Undangan Baru</a>
+            </div>
+          </div>
+        `;
+      }
+
+      // DASHBOARD LOGIC
+      let selectedTemplate = "luxury-gold";
+
+      const FALLBACK_TEMPLATES = [
+        {
+          id: "luxury-gold",
+          title: "Luxury Gold",
+          name: "Luxury Gold / Parallax Lotus",
+          description: "Desain ultra premium bernuansa emas mewah dengan pembuka amplop 3D parallax interaktif, dekorasi lotus, galeri foto, peta lokasi, dan konfirmasi kehadiran RSVP.",
+          tags: ["Amplop 3D", "Lotus Frame", "Gold Rain", "Timeline Story", "Wishes", "Gifts Angpou"],
+          preview: "templates/luxury-gold/preview.svg"
+        },
+        {
+          id: "blue-botanical-mobile",
+          title: "Blue Botanical",
+          name: "Blue Botanical / Mobile Floral",
+          description: "Desain romantis segar bernuansa biru botani dengan ornamen daun dan bunga floral, tata letak khusus mobile yang responsif dan elegan.",
+          tags: ["Mobile Layout", "Bright Theme", "Floral Decor", "Interactive RSVP", "Wishes"],
+          preview: "templates/blue-botanical-mobile/preview.svg"
+        }
+      ];
+
+      async function loadTemplates() {
+        const grid = document.getElementById("templatesGrid");
+        if (!grid) return;
+
+        let list = [];
+        try {
+          const res = await fetch("templates/templates-list.json");
+          if (res.ok) {
+            list = await res.json();
+          } else {
+            const res2 = await fetch("../templates/templates-list.json");
+            if (res2.ok) {
+              list = await res2.json();
+            } else {
+              throw new Error("Failed to fetch templates-list.json");
+            }
+          }
+        } catch (e) {
+          console.warn("Using fallback templates list:", e);
+          list = FALLBACK_TEMPLATES;
+        }
+
+        if (!list || !list.length) {
+          grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--muted)">Tidak ada template yang ditemukan.</div>`;
+          return;
+        }
+
+        grid.innerHTML = "";
+        list.forEach(tpl => {
+          const card = document.createElement("div");
+          card.className = "card";
+          
+          let previewHtml = "";
+          if (tpl.preview) {
+            const imgPath = tpl.preview.startsWith("templates/") ? tpl.preview : `templates/${tpl.id}/${tpl.preview}`;
+            previewHtml = `<img src="${imgPath}" class="card-preview-img" style="width:100%; height:100%; object-fit:cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />`;
+          }
+          
+          card.innerHTML = `
+            <div class="card-preview" style="position:relative; height:180px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#120e0b;">
+              ${previewHtml}
+              <div class="card-preview-fallback" style="position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; background:#120e0b; border-bottom:1px solid var(--border);">
+                <span style="font-size:12px; color:var(--gold); font-family:var(--font-headers); letter-spacing:1px; text-transform:uppercase;">${tpl.title}</span>
+              </div>
+              <span style="position:absolute; bottom:10px; left:12px; font-size:11px; background:rgba(0,0,0,0.65); padding:2px 8px; border-radius:4px; color:#fff; pointer-events:none;">${tpl.name}</span>
+            </div>
+            <div class="card-body">
+              <h3>${tpl.title}</h3>
+              <p>${tpl.description}</p>
+              <div class="card-features">
+                ${tpl.tags.map(t => `<span class="feature-tag">${t}</span>`).join("")}
+              </div>
+              <button class="btn btn-gold use-template" data-template="${tpl.id}">Gunakan Template</button>
+            </div>
+          `;
+          
+          grid.appendChild(card);
+        });
+
+        if (list.length > 0) {
+          selectedTemplate = list[0].id;
+        }
+
+        // Bind event listeners to new buttons
+        document.querySelectorAll(".use-template").forEach(b => {
+          b.onclick = () => {
+            selectedTemplate = b.dataset.template;
+            document.getElementById("new-slug").value = "";
+            const modal = document.getElementById("createModal");
+            if (modal) modal.classList.add("show");
+          };
+        });
+      }
+
+      async function initDashboard() {
+        const modal = document.getElementById("createModal");
+        const newBtn = document.getElementById("newInvitationBtn");
+        const closeBtn = document.getElementById("closeModalBtn");
+        const confirmBtn = document.getElementById("confirmCreateBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const welcomeUser = document.getElementById("welcomeUser");
+        
+        const sessionStr = localStorage.getItem('user_session') || sessionStorage.getItem('user_session');
+        if (sessionStr && welcomeUser) {
+          const session = JSON.parse(sessionStr);
+          welcomeUser.innerHTML = `Halo, <strong>${session.user.username}</strong>!`;
+        }
+        
+        if (logoutBtn) {
+          logoutBtn.onclick = () => window.logout();
+        }
+        
+        newBtn.onclick = () => {
+          if (!selectedTemplate) selectedTemplate = "luxury-gold";
+          document.getElementById("new-slug").value = "";
+          modal.classList.add("show");
+        };
+
+        closeBtn.onclick = () => {
+          modal.classList.remove("show");
+        };
+
+        confirmBtn.onclick = async () => {
+          const inEl = document.getElementById("new-slug");
+          const slug = inEl.value.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, "-");
+          if (!slug) {
+            alert("Slug URL tidak boleh kosong");
+            return;
+          }
+
+          // Create new draft
+          const newDraft = {
+            id: `invitation-${Date.now()}`,
+            templateId: selectedTemplate,
+            status: "draft",
+            data: window.UniversalDefaults // defaults loaded globally
+          };
+
+          await window.publishService.saveDraft(slug, newDraft);
+          
+          // Redirect to workspace
+          window.location.href = `core/index.html?draft=${slug}`;
+        };
+
+        await loadTemplates();
+        renderDraftsList();
+      }
+
+      async function renderDraftsList() {
+        const box = document.getElementById("draftsBox");
+        box.innerHTML = "";
+        
+        const list = await window.publishService.listAll();
+        if (!list.length) {
+          box.innerHTML = `
+            <div style="text-align:center; padding:40px; border:1px dashed var(--border); border-radius:12px; color:var(--muted)">
+              Belum ada undangan yang dibuat. Silakan klik tombol <strong>+ Buat Undangan</strong> untuk memulai.
+            </div>
+          `;
+          return;
+        }
+
+        // Sort by updatedAt descending
+        list.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+        list.forEach(item => {
+          const row = document.createElement("div");
+          row.className = "draft-item";
+          
+          const statusClass = item.status === "published" ? "pub" : "draft";
+          const statusText = item.status === "published" ? "Published" : "Draft";
+          
+          row.innerHTML = `
+            <div class="draft-info">
+              <h4>${item.title} <span class="status-badge ${statusClass}">${statusText}</span></h4>
+              <div class="slug-link">Slug: ?invite=${item.slug} | Template: ${item.templateId}</div>
+            </div>
+            <div class="draft-actions">
+              <a href="core/index.html?draft=${item.slug}" class="btn btn-outline" style="padding: 8px 16px; font-size:11px;">Edit Builder</a>
+              ${item.status === "published" ? `<a href="?invite=${item.slug}" class="btn btn-gold" style="padding: 8px 16px; font-size:11px;">Lihat Web</a>` : ""}
+              <button class="btn btn-danger delete-draft-btn" data-slug="${item.slug}" style="padding: 8px 16px; font-size:11px; margin-left: 8px;">Hapus</button>
+            </div>
+          `;
+          
+          box.appendChild(row);
+        });
+
+        // Bind delete button click handlers
+        document.querySelectorAll(".delete-draft-btn").forEach(btn => {
+          btn.onclick = async () => {
+            const slug = btn.dataset.slug;
+            if (confirm(`Apakah Anda yakin ingin menghapus undangan "${slug}"?`)) {
+              await window.publishService.deleteDraft(slug);
+              renderDraftsList();
+            }
+          };
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>

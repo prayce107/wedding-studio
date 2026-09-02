@@ -1,0 +1,51 @@
+[
+  {
+    "id": "wedding-elegant",
+    "category": "Pernikahan",
+    "name": "Elegant Gold",
+    "thumbnail": "/templates/elegant.jpg",
+    "active": true
+  },
+  {
+    "id": "wedding-floral",
+    "category": "Pernikahan",
+    "name": "Sweet Floral",
+    "thumbnail": "/templates/floral.jpg",
+    "active": true
+  },
+  {
+    "id": "wedding-blossom",
+    "category": "Pernikahan",
+    "name": "Cherry Blossom (Pink)",
+    "thumbnail": "/templates/blossom.jpg",
+    "active": true
+  },
+  {
+    "id": "wedding-leafy",
+    "category": "Pernikahan",
+    "name": "Tropical Leafy (Green)",
+    "thumbnail": "/templates/leafy.jpg",
+    "active": true
+  },
+  {
+    "id": "wedding-minimalist",
+    "category": "Pernikahan",
+    "name": "Rose Minimalist (White)",
+    "thumbnail": "/templates/minimalist.jpg",
+    "active": true
+  },
+  {
+    "id": "birthday-kids",
+    "category": "Ulang Tahun",
+    "name": "Cheerful Dino",
+    "thumbnail": "/templates/birthday.jpg",
+    "active": true
+  },
+  {
+    "id": "khitan-modern",
+    "category": "Khitanan",
+    "name": "Khitan Modern",
+    "thumbnail": "/templates/khitan.jpg",
+    "active": true
+  }
+]

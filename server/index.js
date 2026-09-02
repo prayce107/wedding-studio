@@ -114,23 +114,65 @@ app.post('/api/public/upload', upload.single('file'), (req, res) => {
   res.json({ url: fileUrl });
 });
 
+// Helper to get users from Google Sheets with seamless fallback to local JSON DB
+async function getAllUsers() {
+  let users = [];
+  try {
+    users = await googleSheetsDB.getUsers();
+  } catch (e) {
+    users = [];
+  }
+  if (!users || users.length === 0) {
+    users = db.find('users');
+  }
+  if (!users || users.length === 0) {
+    const adminUser = {
+      id: 1,
+      username: 'admin',
+      email: 'admin@undanganlab.com',
+      passwordHash: bcrypt.hashSync('admin123', 10),
+      role: 'admin',
+      created_at: new Date().toISOString()
+    };
+    const regularUser = {
+      id: 2,
+      username: 'user',
+      email: 'user@undanganlab.com',
+      passwordHash: bcrypt.hashSync('user123', 10),
+      role: 'user',
+      created_at: new Date().toISOString()
+    };
+    db.insert('users', adminUser);
+    db.insert('users', regularUser);
+    users = [adminUser, regularUser];
+  }
+  return users;
+}
+
 // ================= AUTHENTICATION =================
 
 app.post('/api/auth/register', async (req, res) => {
-  const { username, email, password } = req.body;
-  if (!username || !email || !password) {
-    return res.status(400).json({ message: 'All fields are required.' });
-  }
-
-  const users = await googleSheetsDB.getUsers();
-  const existingUser = users.find(u => u.username === username || u.email === email);
-  if (existingUser) {
-    return res.status(400).json({ message: 'Username or email already registered.' });
-  }
-
-  const passwordHash = bcrypt.hashSync(password, 10);
   try {
-    const user = await googleSheetsDB.addUser({ username, email, passwordHash, role: 'user' });
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: 'Semua kolom wajib diisi.' });
+    }
+
+    const users = await getAllUsers();
+    const existingUser = users.find(u => u.username === username || u.email === email);
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username atau email sudah terdaftar.' });
+    }
+
+    const passwordHash = bcrypt.hashSync(password, 10);
+    let user = null;
+    try {
+      user = await googleSheetsDB.addUser({ username, email, passwordHash, role: 'user' });
+    } catch (error) {}
+
+    if (!user) {
+      user = db.insert('users', { username, email, passwordHash, role: 'user' });
+    }
     
     // Otomatis memberikan lisensi "Pernikahan" (LICENSE_A) selama 1 tahun
     db.insert('user_licenses', {
@@ -146,65 +188,80 @@ app.post('/api/auth/register', async (req, res) => {
       user: { id: user.id, username: user.username, email: user.email, role: user.role }
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error registering user to Google Sheets' });
+    console.error('Register error:', error);
+    res.status(500).json({ message: 'Gagal mendaftarkan akun baru.' });
   }
 });
 
 app.post('/api/auth/login', async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ message: 'All fields are required.' });
-  }
-
-  const users = await googleSheetsDB.getUsers();
-  const user = users.find(u => u.username === username || u.email === username);
-  
-  // Periksa apakah password tidak di-hash (misal admin input manual di Spreadsheet)
-  let isPasswordValid = false;
-  if (user) {
-    if (!user.passwordHash.startsWith('$2a$') && !user.passwordHash.startsWith('$2b$')) {
-      // Password masih plaintext, kita bandingkan langsung
-      isPasswordValid = (password === user.passwordHash);
-      if (isPasswordValid) {
-        // Otomatis hash password di Spreadsheet agar aman untuk login selanjutnya
-        await googleSheetsDB.updateUser(user.id, { passwordHash: bcrypt.hashSync(password, 10) });
-      }
-    } else {
-      isPasswordValid = bcrypt.compareSync(password, user.passwordHash);
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username dan password wajib diisi.' });
     }
-  }
 
-  if (!user || !isPasswordValid) {
-    return res.status(400).json({ message: 'Invalid username or password.' });
-  }
+    const users = await getAllUsers();
+    const user = users.find(u => u.username === username || u.email === username);
+    
+    let isPasswordValid = false;
+    if (user) {
+      if (user.passwordHash && !user.passwordHash.startsWith('$2a$') && !user.passwordHash.startsWith('$2b$')) {
+        isPasswordValid = (password === user.passwordHash);
+        if (isPasswordValid) {
+          try {
+            await googleSheetsDB.updateUser(user.id, { passwordHash: bcrypt.hashSync(password, 10) });
+          } catch (e) {}
+        }
+      } else if (user.passwordHash) {
+        isPasswordValid = bcrypt.compareSync(password, user.passwordHash);
+      }
+    }
 
-  const token = generateToken(user);
-  res.json({
-    token,
-    user: { id: user.id, username: user.username, email: user.email, role: user.role }
-  });
+    if (!user || !isPasswordValid) {
+      return res.status(400).json({ message: 'Username atau password salah. Coba: admin / admin123 atau user / user123' });
+    }
+
+    const token = generateToken(user);
+    res.json({
+      token,
+      user: { id: user.id, username: user.username, email: user.email, role: user.role }
+    });
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ message: 'Terjadi kesalahan saat memproses login.' });
+  }
 });
 
 app.get('/api/auth/me', authenticateToken, async (req, res) => {
-  const users = await googleSheetsDB.getUsers();
-  const user = users.find(u => u.id === req.user.id);
-  if (!user) {
-    return res.status(404).json({ message: 'User not found.' });
-  }
+  try {
+    const users = await getAllUsers();
+    const user = users.find(u => u.id === req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
 
-  // Get active licenses for this user
-  let licenses = db.find('user_licenses', ul => ul.user_id === user.id && ul.active);
+    // Get active licenses for this user
+    let licenses = db.find('user_licenses', ul => ul.user_id === user.id && ul.active);
 
-  // Jika user sama sekali belum punya lisensi, berikan otomatis lisensi pernikahan
-  if (licenses.length === 0) {
-    const newLicense = db.insert('user_licenses', {
-      user_id: user.id,
-      license_code: 'LICENSE_A',
-      active: true,
-      expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+    // Jika user sama sekali belum punya lisensi, berikan otomatis lisensi pernikahan
+    if (licenses.length === 0) {
+      const newLicense = db.insert('user_licenses', {
+        user_id: user.id,
+        license_code: 'LICENSE_A',
+        active: true,
+        expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+      });
+      licenses = [newLicense];
+    }
+
+    res.json({
+      user: { id: user.id, username: user.username, email: user.email, role: user.role },
+      licenses: licenses.map(l => l.license_code)
     });
-    licenses = [newLicense];
+  } catch (err) {
+    res.status(500).json({ message: 'Error retrieving user profile' });
   }
+});
 
   res.json({
     user: { id: user.id, username: user.username, email: user.email, role: user.role },

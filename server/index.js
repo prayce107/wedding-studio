@@ -60,11 +60,8 @@ app.get(['/i/:slug', '/invitation/:slug'], (req, res) => {
     `);
   }
   const templateId = invite.template_id || 'luxury-gold';
-  const templatePath = path.join(__dirname, '..', 'templates', templateId, 'index.html');
-  if (fs.existsSync(templatePath)) {
-    return res.sendFile(templatePath);
-  }
-  res.status(404).send('Template tidak ditemukan.');
+  const toParam = req.query.to ? `&to=${encodeURIComponent(req.query.to)}` : '';
+  res.redirect(302, `/templates/${templateId}/index.html?invite=${encodeURIComponent(slug)}${toParam}`);
 });
 
 // Root URL serves main app

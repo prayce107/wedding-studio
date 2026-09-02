@@ -266,12 +266,6 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
   }
 });
 
-  res.json({
-    user: { id: user.id, username: user.username, email: user.email, role: user.role },
-    licenses: licenses.map(l => l.license_code)
-  });
-});
-
 // ================= LICENSE VALIDATION UTIL =================
 function hasLicenseForCategory(userId, category) {
   const licenseMap = {

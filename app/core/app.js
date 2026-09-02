@@ -1266,21 +1266,23 @@
 
       activeDraft.status = "published";
       const res = await window.publishService.publish(slug, activeDraft);
-      
       const fullUrl = `${window.location.origin}/i/${slug}`;
+      const resultBox = $("publishedResult");
       
-      resultBox.innerHTML = `
-        <div class="published-result-card">
-          <h3>✓ Berhasil Diterbitkan!</h3>
-          <p class="section-desc" style="color:#a3c285; margin-bottom:10px;">Undangan digital Anda kini aktif secara publik pada link berikut:</p>
-          <code>${esc(fullUrl)}</code>
-          <div class="result-actions">
-            <button class="btn-primary" id="copyPubLink">Salin Link</button>
-            <button class="btn-secondary" id="openPubLink">Buka Web</button>
+      if (resultBox) {
+        resultBox.innerHTML = `
+          <div class="published-result-card">
+            <h3>✓ Berhasil Diterbitkan!</h3>
+            <p class="section-desc" style="color:#a3c285; margin-bottom:10px;">Undangan digital Anda kini aktif secara publik pada link berikut:</p>
+            <code>${esc(fullUrl)}</code>
+            <div class="result-actions">
+              <button class="btn-primary" id="copyPubLink">Salin Link</button>
+              <button class="btn-secondary" id="openPubLink">Buka Web</button>
+            </div>
           </div>
-        </div>
-      `;
-      resultBox.classList.remove("hidden");
+        `;
+        resultBox.classList.remove("hidden");
+      }
       
       $("copyPubLink").onclick = () => {
         navigator.clipboard.writeText(fullUrl)

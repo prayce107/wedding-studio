@@ -177,7 +177,45 @@
       if (address) address.innerHTML = nl(gift.giftAddress || "");
 
       const liveBtn = dom.getElementById("liveBtn");
-      if (liveBtn) liveBtn.href = safeUrl(live.liveUrl);
+      if (liveBtn) {
+        if (live.liveUrl) {
+          liveBtn.href = safeUrl(live.liveUrl);
+          liveBtn.style.display = "inline-block";
+        } else {
+          liveBtn.style.display = "none";
+        }
+      }
+
+      // Prewedding Video Embed
+      const liveSection = dom.getElementById("liveSection");
+      if (liveSection) {
+        let videoFrame = dom.getElementById("botanicalVideoFrame");
+        const videoUrl = live.videoUrl || "";
+        if (videoUrl) {
+          const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+          const vimeoMatch = videoUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+          let embedSrc = videoUrl;
+          if (ytMatch && ytMatch[1]) embedSrc = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0&rel=0`;
+          else if (vimeoMatch && vimeoMatch[1]) embedSrc = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+
+          if (!videoFrame) {
+            videoFrame = dom.createElement("iframe");
+            videoFrame.id = "botanicalVideoFrame";
+            videoFrame.setAttribute("allowfullscreen", "true");
+            videoFrame.style.width = "100%";
+            videoFrame.style.aspectRatio = "16/9";
+            videoFrame.style.border = "1px solid rgba(79, 118, 184, 0.3)";
+            videoFrame.style.borderRadius = "14px";
+            videoFrame.style.marginBottom = "15px";
+            const targetContainer = liveSection.querySelector(".streaming-box") || liveSection;
+            targetContainer.insertBefore(videoFrame, targetContainer.firstChild);
+          }
+          if (videoFrame.src !== embedSrc) videoFrame.src = embedSrc;
+          videoFrame.style.display = "block";
+        } else if (videoFrame) {
+          videoFrame.style.display = "none";
+        }
+      }
 
       const root = dom.documentElement;
       const colors = style.colors || {};

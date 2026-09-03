@@ -1,14 +1,52 @@
+const getToken = () => {
+  const session = localStorage.getItem('user_session') || sessionStorage.getItem('user_session');
+  if (!session) return null;
+  try {
+    const parsed = JSON.parse(session);
+    return parsed.token || null;
+  } catch (e) {
+    return null;
+  }
+};
+
 const storageService = {
   /**
-   * Uploads a file (image, audio, video) and returns its optimized URL / Base64.
-   * Automatically compresses images using Canvas to max 1200px and 80% quality,
-   * keeping photos ultra-sharp while reducing size from 5-10MB down to ~150KB.
+   * Uploads a file (image, audio, video) directly to Cloudinary CDN via /api/upload
+   * with automatic fallback to high-quality compressed Base64 Canvas.
    * @param {File} file 
-   * @returns {Promise<string>} Optimized file URL / data
+   * @returns {Promise<string>} Optimized CDN file URL or compressed Data URL
    */
   async uploadFile(file) {
     if (!file) throw new Error("Tidak ada file yang dipilih");
 
+    // 1. Try uploading to backend / Cloudinary CDN
+    try {
+      const token = getToken();
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const headers = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: headers,
+        body: formData
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.url) {
+          return data.url;
+        }
+      }
+    } catch (apiErr) {
+      console.warn("Cloudinary direct upload notice, falling back to local compression:", apiErr);
+    }
+
+    // 2. Client-side Image compression fallback
     const isImage = file.type.startsWith("image/") || /\.(jpe?g|png|gif|webp)$/i.test(file.name);
 
     if (isImage) {
@@ -21,7 +59,7 @@ const storageService = {
               const canvas = document.createElement('canvas');
               let width = img.width;
               let height = img.height;
-              const maxDimension = 1200;
+              const maxDimension = 1280;
 
               if (width > maxDimension || height > maxDimension) {
                 if (width > height) {
@@ -38,10 +76,9 @@ const storageService = {
               const ctx = canvas.getContext('2d');
               ctx.drawImage(img, 0, 0, width, height);
 
-              const compressed = canvas.toDataURL('image/jpeg', 0.82);
+              const compressed = canvas.toDataURL('image/jpeg', 0.85);
               resolve(compressed);
             } catch (err) {
-              // Fallback to original read result if canvas fails
               resolve(e.target.result);
             }
           };
@@ -53,7 +90,7 @@ const storageService = {
       });
     }
 
-    // Audio & other files
+    // Audio & video fallback
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result);

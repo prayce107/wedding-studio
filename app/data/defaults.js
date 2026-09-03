@@ -42,7 +42,7 @@ const UniversalDefaults = {
     ]
   },
   gallery: {
-    galleryTitle: "Gallery",
+    galleryTitle: "Our Moments",
     album: [
       { src: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=85", caption: "Our day" },
       { src: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=85", caption: "Forever" },
@@ -66,12 +66,13 @@ const UniversalDefaults = {
     rsvpButton: "KIRIM KONFIRMASI"
   },
   live: {
-    liveTitle: "Live Streaming",
-    liveIntro: "Saksikan momen bahagia kami secara langsung.",
-    liveUrl: ""
+    liveTitle: "Prewedding Video & Live",
+    liveIntro: "Saksikan video perjalanan dan siaran langsung momen bahagia kami.",
+    liveUrl: "",
+    videoUrl: "" // YouTube Embed / MP4 URL
   },
   music: {
-    music: ""
+    music: "https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3"
   },
   guestBook: {
     guestTitle: "Ucapan & Doa",
@@ -86,7 +87,7 @@ const UniversalDefaults = {
     giftSendTitle: "Kirim Kado",
     giftSendIntro: "Untuk keluarga dan sahabat yang ingin mengirim kado.",
     giftAddress: "Alamat penerimaan kado akan ditampilkan di sini.",
-    giftTitle: "Gift for Us",
+    giftTitle: "Wedding Gift",
     giftIntro: "Doa dan kehadiran Anda adalah hadiah terindah. Bila ingin mengirim tanda kasih, dapat melalui:",
     gifts: [
       { bank: "Bank BCA", rek: "1234567890", owner: "Aulia Raka" },

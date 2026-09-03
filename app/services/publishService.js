@@ -16,6 +16,13 @@ const publishService = {
       throw new Error('Sesi Anda telah berakhir. Silakan login kembali.');
     }
 
+    // Cache locally for instant 0ms offline availability
+    try {
+      if (invitation.data) {
+        localStorage.setItem('invitation_cache_' + slug, JSON.stringify(invitation.data));
+      }
+    } catch (e) {}
+
     const all = await this.listAll();
     const existing = all.find(i => i.slug === slug);
     
@@ -31,7 +38,7 @@ const publishService = {
         body: JSON.stringify({
           title: title,
           content: invitation.data,
-          status: existing.status || "draft",
+          status: "active", // Always lifetime active
           slug: slug
         })
       });
@@ -65,7 +72,7 @@ const publishService = {
         await fetch(`/api/invitations/${created.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ content: invitation.data })
+          body: JSON.stringify({ content: invitation.data, status: "active" })
         });
       }
       
@@ -79,7 +86,14 @@ const publishService = {
       throw new Error('Sesi login telah berakhir. Silakan login ulang.');
     }
 
-    // Save draft first to ensure it exists in DB
+    // Cache locally
+    try {
+      if (invitation.data) {
+        localStorage.setItem('invitation_cache_' + slug, JSON.stringify(invitation.data));
+      }
+    } catch (e) {}
+
+    // Save and activate in DB
     await this.saveDraft(slug, invitation);
 
     const all = await this.listAll();
@@ -91,12 +105,6 @@ const publishService = {
     const title = invitation.data?.general?.name1 ? 
       `${invitation.data.general.name1} & ${invitation.data.general.name2}` : 
       (invitation.data?.opening?.couple || slug);
-
-    try {
-      if (invitation.data) {
-        localStorage.setItem('invitation_cache_' + slug, JSON.stringify(invitation.data));
-      }
-    } catch (e) {}
 
     const res = await fetch(`/api/invitations/${existing._dbId}`, {
       method: 'PUT',
@@ -114,7 +122,12 @@ const publishService = {
       throw new Error(err.message || 'Gagal mengubah status menjadi aktif.');
     }
 
-    return { success: true, slug: slug };
+    return { 
+      success: true, 
+      slug: slug, 
+      link: `${window.location.origin}/i/${slug}`,
+      templateLink: `${window.location.origin}/templates/${invitation.templateId || 'luxury-gold'}/index.html?invite=${slug}`
+    };
   },
   
   async getPublished(slug) {
@@ -122,6 +135,13 @@ const publishService = {
   },
   
   async getDraft(slug) {
+    // 1. Try local cache first for instant load
+    let cachedContent = null;
+    try {
+      const c = localStorage.getItem('invitation_cache_' + slug);
+      if (c) cachedContent = JSON.parse(c);
+    } catch (e) {}
+
     const all = await this.listAll();
     const item = all.find(i => i.slug === slug);
     if (item && item._dbId) {
@@ -130,19 +150,38 @@ const publishService = {
        });
        if (detailRes.ok) {
           const detail = await detailRes.json();
+          const content = detail.content || cachedContent || {};
+          try {
+            localStorage.setItem('invitation_cache_' + slug, JSON.stringify(content));
+          } catch (e) {}
+
           return {
             _dbId: detail.id,
             id: `invitation-${detail.id}`,
             templateId: detail.template_id,
-            status: detail.status,
-            data: detail.content || {}
+            status: detail.status || 'active',
+            data: content
           };
        }
     }
+
+    if (cachedContent) {
+      return {
+        id: `invitation-cached`,
+        templateId: "luxury-gold",
+        status: "active",
+        data: cachedContent
+      };
+    }
+
     return null;
   },
   
   async deleteDraft(slug) {
+    try {
+      localStorage.removeItem('invitation_cache_' + slug);
+    } catch (e) {}
+
     const all = await this.listAll();
     const item = all.find(i => i.slug === slug);
     if (item && item._dbId) {
@@ -180,8 +219,8 @@ const publishService = {
           _dbId: item.id,
           slug: item.slug,
           templateId: item.template_id,
-          status: item.status,
-          updatedAt: item.active_until || new Date().toISOString(),
+          status: item.status || 'active',
+          updatedAt: item.created_at || new Date().toISOString(),
           data: dataObj,
           title: item.title
         };

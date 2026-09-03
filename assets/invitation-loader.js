@@ -1,16 +1,15 @@
 /**
  * Universal Invitation Live Loader & Backend Sync
  * Features:
- * - Server-Side Injected State for Instant 0ms Zero-Delay Rendering (No missing text/images)
+ * - Instant Zero-Delay Client Rendering from local cache (SWR Pattern)
  * - Automatic background sync from Google Sheets / Express API
- * - Real-time RSVP and Guest Wishes integration
- * - Bulletproof mobile autoplay audio management
+ * - Lifetime URL & Guest Personalization Support
+ * - Real-time RSVP, Guest Wishes & Music Auto-Play integration
  */
 (function () {
   'use strict';
 
   function getSlug() {
-    if (window.__INITIAL_INVITATION_SLUG__) return String(window.__INITIAL_INVITATION_SLUG__).toLowerCase().trim();
     const params = new URLSearchParams(window.location.search);
     let slug = params.get('invite') || params.get('slug');
     if (!slug) {
@@ -21,7 +20,6 @@
   }
 
   function getGuestParam() {
-    if (window.__INITIAL_INVITATION_GUEST__) return String(window.__INITIAL_INVITATION_GUEST__).trim();
     const params = new URLSearchParams(window.location.search);
     return params.get('to') || '';
   }
@@ -35,43 +33,25 @@
     if (!content) return;
     window.invitationData = content;
     if (window.TemplateAdapter && typeof window.TemplateAdapter.render === 'function') {
-      try {
-        window.TemplateAdapter.render(document, content);
-      } catch (err) {
-        console.warn('Adapter render error:', err);
-      }
-    }
-  }
-
-  // 1. Instant 0ms Initial Execution from Server-Injected Data
-  if (window.__INITIAL_INVITATION_DATA__) {
-    renderData(window.__INITIAL_INVITATION_DATA__);
-    if (slug) {
-      try {
-        localStorage.setItem('invitation_cache_' + slug, JSON.stringify(window.__INITIAL_INVITATION_DATA__));
-      } catch (e) {}
+      window.TemplateAdapter.render(document, content);
     }
   }
 
   async function loadLiveInvitation() {
     if (!slug) return;
 
-    // A. Instant Zero-Delay Server or Local Cache Load
-    if (window.__INITIAL_INVITATION_DATA__) {
-      renderData(window.__INITIAL_INVITATION_DATA__);
-    } else {
-      try {
-        const cached = localStorage.getItem('invitation_cache_' + slug);
-        if (cached) {
-          const cachedData = JSON.parse(cached);
-          if (cachedData) {
-            renderData(cachedData);
-          }
+    // 1. Instant Zero-Delay Cache Load (SWR Strategy)
+    try {
+      const cached = localStorage.getItem('invitation_cache_' + slug);
+      if (cached) {
+        const cachedData = JSON.parse(cached);
+        if (cachedData) {
+          renderData(cachedData);
         }
-      } catch (e) {}
-    }
+      }
+    } catch (e) {}
 
-    // B. Background Sync with Live API / Google Sheets
+    // 2. Background Sync with Live API / Google Sheets
     try {
       const apiUrl = `/api/public/invitations/${encodeURIComponent(slug)}${guestTo ? '?to=' + encodeURIComponent(guestTo) : ''}`;
       const res = await fetch(apiUrl);
@@ -99,9 +79,9 @@
         const messagesEl = document.getElementById('guestMessages');
         if (messagesEl && wishes.length > 0) {
           messagesEl.innerHTML = wishes.map(w => `
-            <div class="guest-message">
-              <strong>${escapeHtml(w.name)}</strong>
-              <p>${escapeHtml(w.message)}</p>
+            <div class="guest-message" style="background:rgba(255,255,255,0.04); border:1px solid rgba(213,161,93,0.15); border-radius:10px; padding:14px; margin-bottom:10px;">
+              <strong style="color:var(--gold,#d5a15d); font-size:14px; display:block; margin-bottom:4px;">${escapeHtml(w.name)}</strong>
+              <p style="margin:0; font-size:13px; line-height:1.5; color:rgba(255,255,255,0.85);">${escapeHtml(w.message)}</p>
             </div>
           `).join('');
         }
@@ -115,6 +95,20 @@
     }[c]));
   }
 
+  function showToast(msg) {
+    let t = document.getElementById('toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'toast';
+      t.className = 'toast';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t.timer);
+    t.timer = setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
   function hookLiveForms() {
     if (!slug) return;
 
@@ -122,20 +116,30 @@
     const rsvpForm = document.getElementById('rsvpForm');
     if (rsvpForm) {
       rsvpForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
         const guestNameEl = document.getElementById('guestName');
         const attendanceEl = document.getElementById('attendance');
         const guestCountEl = document.getElementById('guestCount');
         const messageEl = document.getElementById('message');
+        const statusEl = document.getElementById('rsvpStatus');
 
         const name = guestNameEl ? guestNameEl.value.trim() : '';
-        const status = attendanceEl ? attendanceEl.value : 'hadir';
+        const status = attendanceEl ? attendanceEl.value : 'Hadir';
         const count = guestCountEl ? parseInt(guestCountEl.value, 10) || 1 : 1;
         const msg = messageEl ? messageEl.value.trim() : '';
 
-        if (!name) return;
+        if (!name) {
+          showToast('Nama wajib diisi.');
+          return;
+        }
+
+        if (statusEl) {
+          statusEl.textContent = 'Mengirim konfirmasi kehadiran...';
+          statusEl.style.color = '#d5a15d';
+        }
 
         try {
-          await fetch(`/api/public/invitations/${encodeURIComponent(slug)}/rsvp`, {
+          const res = await fetch(`/api/public/invitations/${encodeURIComponent(slug)}/rsvp`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -145,8 +149,21 @@
               message: msg
             })
           });
-        } catch (err) {}
-      }, true);
+
+          if (res.ok) {
+            showToast('Konfirmasi RSVP berhasil dikirim!');
+            if (statusEl) {
+              statusEl.textContent = '✓ Terima kasih! Konfirmasi kehadiran Anda telah tersimpan.';
+              statusEl.style.color = '#a3c285';
+            }
+            if (messageEl) messageEl.value = '';
+          } else {
+            showToast('Gagal mengirim RSVP.');
+          }
+        } catch (err) {
+          showToast('Koneksi terganggu.');
+        }
+      });
     }
 
     // Hook Wish Form
@@ -158,17 +175,35 @@
         const n = wishNameEl ? wishNameEl.value.trim() : '';
         const w = wishTextEl ? wishTextEl.value.trim() : '';
 
-        if (!n || !w) return;
+        if (!n || !w) {
+          showToast('Nama dan ucapan doa wajib diisi.');
+          return;
+        }
+
+        wishBtn.disabled = true;
+        wishBtn.textContent = 'Mengirim...';
 
         try {
-          await fetch(`/api/public/invitations/${encodeURIComponent(slug)}/wish`, {
+          const res = await fetch(`/api/public/invitations/${encodeURIComponent(slug)}/wish`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: n, message: w })
           });
-          setTimeout(loadLiveWishes, 600);
-        } catch (err) {}
-      }, true);
+
+          if (res.ok) {
+            showToast('Ucapan dan doa berhasil dikirim!');
+            if (wishTextEl) wishTextEl.value = '';
+            setTimeout(loadLiveWishes, 400);
+          } else {
+            showToast('Gagal mengirim ucapan.');
+          }
+        } catch (err) {
+          showToast('Koneksi terganggu.');
+        } finally {
+          wishBtn.disabled = false;
+          wishBtn.textContent = 'KIRIM UCAPAN';
+        }
+      });
     }
   }
 

@@ -330,28 +330,56 @@
             </div>
 
             <div class="panel-section">
-              <h2>Media (Musik & Streaming)</h2>
+              <h2>Media (Musik & Video)</h2>
               <div class="accordion">
                 <div class="accordion-item">
-                  <button class="accordion-header">Latar Musik (MP3)</button>
+                  <button class="accordion-header">Latar Musik (Background Music)</button>
                   <div class="accordion-body">
                     <div class="form-grid">
                       <div class="field full">
-                        <label>Upload Lagu MP3</label>
+                        <label>Pilih Koleksi Lagu Romantis</label>
+                        <select id="presetMusicSelect" style="width: 100%; background: #080604; border: 1px solid var(--border); color: var(--cream); padding: 11px 14px; border-radius: 8px; font-size: 13px; outline: none; margin-bottom: 10px;">
+                          <option value="">-- Pilih Musik Bawaan --</option>
+                          <option value="https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3">Romantic Wedding Tune (Piano & Strings)</option>
+                          <option value="https://assets.mixkit.co/music/preview/mixkit-wedding-acoustic-guitar-melody-123.mp3">Acoustic Love Guitar</option>
+                          <option value="https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3">Serene Harmony Piano</option>
+                          <option value="https://assets.mixkit.co/music/preview/mixkit-sweet-love-story-568.mp3">Sweet Love Story</option>
+                          <option value="https://assets.mixkit.co/music/preview/mixkit-wedding-bells-cinematic-789.mp3">Cinematic Wedding Day</option>
+                        </select>
+                      </div>
+                      <div class="field full">
+                        <label>Upload File MP3 Sendiri (Cloud CDN)</label>
                         <div class="upload-box">
                           <input type="file" accept="audio/*" id="upload-music">
                           <div class="upload-placeholder">Pilih MP3 lagu romantis</div>
                         </div>
                       </div>
                       <div class="field full">
-                        <label>Atau isi Direct URL MP3</label>
-                        <input type="text" data-edit="music.music" placeholder="https://storage.com/song.mp3">
+                        <label>Atau Direct URL Musik MP3</label>
+                        <div class="input-action-row">
+                          <input type="text" data-edit="music.music" id="musicUrlInput" placeholder="https://res.cloudinary.com/.../song.mp3">
+                          <button class="btn-outline" id="testMusicBtn" type="button" style="white-space:nowrap;">▶ Play</button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
+
                 <div class="accordion-item">
-                  <button class="accordion-header">Live Streaming</button>
+                  <button class="accordion-header">Video Prewedding & Teaser</button>
+                  <div class="accordion-body">
+                    <div class="form-grid">
+                      <div class="field full">
+                        <label>Link Video YouTube / Vimeo / MP4</label>
+                        <input type="text" data-edit="live.videoUrl" placeholder="https://www.youtube.com/watch?v=... atau https://youtu.be/...">
+                        <small style="font-size:11px; color:var(--text-muted); margin-top:4px; display:block;">Mendukung link YouTube, YouTube Shorts, atau direct video MP4.</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <button class="accordion-header">Live Streaming Siaran Langsung</button>
                   <div class="accordion-body">
                     <div class="form-grid">
                       <div class="field full">
@@ -363,8 +391,8 @@
                         <textarea data-edit="live.liveIntro"></textarea>
                       </div>
                       <div class="field full">
-                        <label>Link Streaming (Youtube/Zoom/dll)</label>
-                        <input type="text" data-edit="live.liveUrl">
+                        <label>Link Siaran (YouTube Live/Zoom/Instagram)</label>
+                        <input type="text" data-edit="live.liveUrl" placeholder="https://youtube.com/live/...">
                       </div>
                     </div>
                   </div>

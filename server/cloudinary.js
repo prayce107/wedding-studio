@@ -10,13 +10,25 @@ cloudinary.config({
 class CloudinaryDB {
   uploadFile(fileBuffer, resourceType = 'auto') {
     return new Promise((resolve, reject) => {
+      const options = {
+        resource_type: resourceType,
+        folder: 'wedding_assets',
+      };
+
+      // If image, enable progressive loading & webp auto format
+      if (resourceType === 'image' || resourceType === 'auto') {
+        options.quality = 'auto:good';
+        options.fetch_format = 'auto';
+      }
+
       const uploadStream = cloudinary.uploader.upload_stream(
-        { resource_type: resourceType, folder: 'wedding_assets' },
+        options,
         (error, result) => {
-          if (result) {
+          if (result && result.secure_url) {
             resolve(result.secure_url);
           } else {
-            reject(error);
+            console.error('Cloudinary upload error:', error);
+            reject(error || new Error('Upload to Cloudinary failed'));
           }
         }
       );

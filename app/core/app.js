@@ -915,10 +915,10 @@
       }
       
       console.log("Audio file selected:", file.name, "size:", file.size, "type:", file.type);
-      toast("Mengunggah lagu MP3...");
+      toast("Mengunggah lagu MP3 ke Cloud CDN...");
       try {
         const url = await window.storageService.uploadFile(file);
-        console.log("Audio file successfully read, length:", url.length);
+        console.log("Audio file successfully uploaded, length:", url.length);
         
         if (!activeDraft.data.music) activeDraft.data.music = {};
         activeDraft.data.music.music = url;
@@ -932,13 +932,62 @@
         updatePreview();
         triggerOpenInvitation();
         triggerAutoSave();
-        toast("Musik terpasang!");
+        toast("Musik MP3 terpasang!");
         console.log("Audio file applied and draft saved.");
       } catch (err) {
         console.error("Audio upload failed:", err);
         toast("Lagu gagal diunggah: " + err.message);
       }
     };
+
+    // Preset Music Dropdown
+    const presetSelect = $("presetMusicSelect");
+    if (presetSelect) {
+      presetSelect.onchange = () => {
+        const val = presetSelect.value;
+        if (val) {
+          if (!activeDraft.data.music) activeDraft.data.music = {};
+          activeDraft.data.music.music = val;
+          
+          const musicInput = document.querySelector('[data-edit="music.music"]');
+          if (musicInput) musicInput.value = val;
+          
+          updatePreview();
+          triggerOpenInvitation();
+          triggerAutoSave();
+          toast("Musik romantis dipilih!");
+        }
+      };
+    }
+
+    // Test Music Audio Player
+    let previewAudio = null;
+    const testBtn = $("testMusicBtn");
+    if (testBtn) {
+      testBtn.onclick = () => {
+        const musicUrl = (activeDraft.data.music && activeDraft.data.music.music) || "";
+        if (!musicUrl) {
+          return toast("Pilih atau masukkan link musik terlebih dahulu");
+        }
+
+        if (previewAudio && !previewAudio.paused) {
+          previewAudio.pause();
+          testBtn.textContent = "▶ Play";
+          toast("Musik dijeda");
+        } else {
+          if (!previewAudio || previewAudio.src !== musicUrl) {
+            previewAudio = new Audio(musicUrl);
+            previewAudio.onended = () => { testBtn.textContent = "▶ Play"; };
+          }
+          previewAudio.play().then(() => {
+            testBtn.textContent = "⏸ Pause";
+            toast("Memutar preview musik...");
+          }).catch(err => {
+            toast("Gagal memutar audio: " + err.message);
+          });
+        }
+      };
+    }
   }
 
   // Love Story list rendering
@@ -1082,16 +1131,15 @@
 
   // Guest list manager
   function getGuestUrl(name) {
-    const pathParts = window.location.pathname.split('/');
-    if (pathParts[pathParts.length - 1] === 'index.html' || pathParts[pathParts.length - 1] === '') {
-      pathParts.pop();
-    }
-    if (pathParts[pathParts.length - 1] === 'core') {
-      pathParts.pop();
-    }
-    const basePath = pathParts.join('/') + '/';
-    const base = window.location.origin + basePath + 'index.html';
-    return `${base}?invite=${activeSlug}&to=${encodeURIComponent(name)}`;
+    return `${window.location.origin}/i/${activeSlug}?to=${encodeURIComponent(name)}`;
+  }
+
+  function getWhatsAppMessage(name, url) {
+    const coupleName = (activeDraft.data.general && activeDraft.data.general.name1 && activeDraft.data.general.name2)
+      ? `${activeDraft.data.general.name1} & ${activeDraft.data.general.name2}`
+      : "Kami";
+    
+    return `Kepada Yth. Bapak/Ibu/Saudara/i *${name}*\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda untuk hadir dan memberikan doa restu pada acara pernikahan kami:\n\n💍 *${coupleName}*\n\nUntuk informasi lengkap mengenai detail acara, waktu, dan lokasi, silakan buka tautan undangan digital berikut:\n${url}\n\nMerupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir.\n\nTerima kasih.`;
   }
 
   function renderGuestList() {
@@ -1112,7 +1160,7 @@
     const list = activeDraft.data.guest.guests;
 
     if (!list.length) {
-      box.innerHTML = `<div class="publish-box">Belum ada tamu undangan terdaftar.</div>`;
+      box.innerHTML = `<div class="publish-box">Belum ada tamu undangan terdaftar. Tambahkan nama tamu di atas untuk membuat link personal.</div>`;
       return;
     }
 
@@ -1125,6 +1173,7 @@
         <div class="guest-row-header">
           <input type="text" value="${esc(g.name)}" class="guest-name-edit">
           <div class="guest-actions">
+            <button class="btn-wa-share" style="background:#25D366; color:#fff; border:0; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;" title="Kirim Undangan via WhatsApp">📲 Kirim WA</button>
             <button class="btn-copy-link">Copy Link</button>
             <button class="btn-delete-guest">Hapus</button>
           </div>
@@ -1137,6 +1186,11 @@
         g.name = input.value.trim();
         renderGuestList();
         triggerAutoSave();
+      };
+
+      row.querySelector(".btn-wa-share").onclick = () => {
+        const waText = encodeURIComponent(getWhatsAppMessage(g.name, url));
+        window.open(`https://api.whatsapp.com/send?text=${waText}`, '_blank');
       };
 
       row.querySelector(".btn-copy-link").onclick = () => {

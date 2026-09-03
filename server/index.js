@@ -9,7 +9,7 @@ import { authenticateToken, requireAdmin, generateToken } from './auth.js';
 import bcrypt from 'bcryptjs';
 import os from 'os';
 import googleSheetsDB from './googleSheets.js';
-
+import cloudinaryDB from './cloudinary.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -59,17 +59,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'app', 'index.html'));
 });
 
-// Setup Multer Storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-  }
-});
+// Setup Multer Storage (Gunakan memoryStorage agar bisa langsung diupload ke Google Drive)
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
@@ -87,21 +78,33 @@ const upload = multer({
 });
 
 // File Upload Route (Authenticated for builder uploads)
-app.post('/api/upload', authenticateToken, upload.single('file'), (req, res) => {
+app.post('/api/upload', authenticateToken, upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded.' });
   }
-  const fileUrl = `/uploads/${req.file.filename}`;
-  res.json({ url: fileUrl });
+  try {
+    const resourceType = req.file.mimetype.startsWith('audio/') ? 'video' : 'auto';
+    const fileUrl = await cloudinaryDB.uploadFile(req.file.buffer, resourceType);
+    res.json({ url: fileUrl });
+  } catch (error) {
+    console.error('Cloudinary Upload Error:', error);
+    res.status(500).json({ message: 'Gagal mengunggah file ke Cloudinary.' });
+  }
 });
 
 // Public File Upload Route (For guests uploading RSVP/gift confirmation transfer receipts)
-app.post('/api/public/upload', upload.single('file'), (req, res) => {
+app.post('/api/public/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded.' });
   }
-  const fileUrl = `/uploads/${req.file.filename}`;
-  res.json({ url: fileUrl });
+  try {
+    const resourceType = req.file.mimetype.startsWith('audio/') ? 'video' : 'auto';
+    const fileUrl = await cloudinaryDB.uploadFile(req.file.buffer, resourceType);
+    res.json({ url: fileUrl });
+  } catch (error) {
+    console.error('Cloudinary Public Upload Error:', error);
+    res.status(500).json({ message: 'Gagal mengunggah file ke Cloudinary.' });
+  }
 });
 
 // Helper to get users from Google Sheets with seamless fallback to local JSON DB

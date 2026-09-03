@@ -34,7 +34,7 @@ app.use('/templates', express.static(path.join(__dirname, '..', 'templates')));
 app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
 app.use('/app', express.static(path.join(__dirname, '..', 'app')));
 
-// Clean Pretty URLs for published invitations
+// Clean Pretty URLs for published invitations with Server-Side Instant Data Injection
 app.get(['/i/:slug', '/invitation/:slug'], async (req, res) => {
   const slug = req.params.slug.toLowerCase().trim();
   let invite = db.findOne('invitations', i => i.slug === slug);
@@ -49,7 +49,34 @@ app.get(['/i/:slug', '/invitation/:slug'], async (req, res) => {
       }
     } catch (e) {}
   }
+
   const templateId = (invite && invite.template_id) || 'luxury-gold';
+  const detail = invite ? db.findOne('invitation_data', d => d.invitation_id === invite.id) : null;
+  const contentData = (detail && detail.content) || (invite && invite.content) || null;
+  const guestParam = req.query.to || '';
+
+  const templatePath = path.join(__dirname, '..', 'templates', templateId, 'index.html');
+  if (fs.existsSync(templatePath)) {
+    let html = fs.readFileSync(templatePath, 'utf8');
+    const baseTag = `<base href="/templates/${templateId}/">\n`;
+    const injectionScript = `
+    <script>
+      window.__INITIAL_INVITATION_DATA__ = ${JSON.stringify(contentData)};
+      window.__INITIAL_INVITATION_SLUG__ = ${JSON.stringify(slug)};
+      window.__INITIAL_INVITATION_GUEST__ = ${JSON.stringify(guestParam)};
+    </script>
+    `;
+
+    if (html.includes('<head>')) {
+      html = html.replace('<head>', `<head>\n  ${baseTag}  ${injectionScript}`);
+    } else {
+      html = baseTag + injectionScript + html;
+    }
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(html);
+  }
+
   const toParam = req.query.to ? `&to=${encodeURIComponent(req.query.to)}` : '';
   res.redirect(302, `/templates/${templateId}/index.html?invite=${encodeURIComponent(slug)}${toParam}`);
 });

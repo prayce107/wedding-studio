@@ -57,8 +57,13 @@
       if (music?.src) {
         music.play().then(() => {
           musicOn = true;
+          window.__pendingMusicAutoplay = false;
           if (musicBtn) musicBtn.textContent = "❚❚";
-        }).catch(() => {});
+        }).catch(() => {
+          window.__pendingMusicAutoplay = true;
+        });
+      } else {
+        window.__pendingMusicAutoplay = true;
       }
 
       setTimeout(() => {
@@ -257,4 +262,14 @@
       });
     }
   });
+
+  document.addEventListener("click", () => {
+    if (opened && window.__pendingMusicAutoplay && music && music.src && !musicOn) {
+      music.play().then(() => {
+        musicOn = true;
+        window.__pendingMusicAutoplay = false;
+        if (musicBtn) musicBtn.textContent = "❚❚";
+      }).catch(() => {});
+    }
+  }, { passive: true });
 })();

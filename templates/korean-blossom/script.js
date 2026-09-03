@@ -52,11 +52,14 @@
           music.play()
             .then(() => {
               musicOn = true;
+              window.__pendingMusicAutoplay = false;
               if (musicBtn) musicBtn.textContent = "♫";
             })
             .catch(() => {
-              console.log("Autoplay blocked by browser policy");
+              window.__pendingMusicAutoplay = true;
             });
+        } else {
+          window.__pendingMusicAutoplay = true;
         }
       }, 400);
       
@@ -355,4 +358,15 @@
         });
     }
   };
+
+  // Resume music on any user touch/tap if pending
+  document.addEventListener("click", () => {
+    if (opened && window.__pendingMusicAutoplay && music && music.src && !musicOn) {
+      music.play().then(() => {
+        musicOn = true;
+        window.__pendingMusicAutoplay = false;
+        if (musicBtn) musicBtn.textContent = "♫";
+      }).catch(() => {});
+    }
+  }, { passive: true });
 })();

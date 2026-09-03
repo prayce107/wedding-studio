@@ -1,14 +1,16 @@
 /**
  * Universal Invitation Live Loader & Backend Sync
  * Features:
- * - Instant Zero-Delay Client Rendering from local cache
+ * - Server-Side Injected State for Instant 0ms Zero-Delay Rendering (No missing text/images)
  * - Automatic background sync from Google Sheets / Express API
  * - Real-time RSVP and Guest Wishes integration
+ * - Bulletproof mobile autoplay audio management
  */
 (function () {
   'use strict';
 
   function getSlug() {
+    if (window.__INITIAL_INVITATION_SLUG__) return String(window.__INITIAL_INVITATION_SLUG__).toLowerCase().trim();
     const params = new URLSearchParams(window.location.search);
     let slug = params.get('invite') || params.get('slug');
     if (!slug) {
@@ -19,6 +21,7 @@
   }
 
   function getGuestParam() {
+    if (window.__INITIAL_INVITATION_GUEST__) return String(window.__INITIAL_INVITATION_GUEST__).trim();
     const params = new URLSearchParams(window.location.search);
     return params.get('to') || '';
   }
@@ -32,25 +35,43 @@
     if (!content) return;
     window.invitationData = content;
     if (window.TemplateAdapter && typeof window.TemplateAdapter.render === 'function') {
-      window.TemplateAdapter.render(document, content);
+      try {
+        window.TemplateAdapter.render(document, content);
+      } catch (err) {
+        console.warn('Adapter render error:', err);
+      }
+    }
+  }
+
+  // 1. Instant 0ms Initial Execution from Server-Injected Data
+  if (window.__INITIAL_INVITATION_DATA__) {
+    renderData(window.__INITIAL_INVITATION_DATA__);
+    if (slug) {
+      try {
+        localStorage.setItem('invitation_cache_' + slug, JSON.stringify(window.__INITIAL_INVITATION_DATA__));
+      } catch (e) {}
     }
   }
 
   async function loadLiveInvitation() {
     if (!slug) return;
 
-    // 1. Instant Zero-Delay Cache Load
-    try {
-      const cached = localStorage.getItem('invitation_cache_' + slug);
-      if (cached) {
-        const cachedData = JSON.parse(cached);
-        if (cachedData) {
-          renderData(cachedData);
+    // A. Instant Zero-Delay Server or Local Cache Load
+    if (window.__INITIAL_INVITATION_DATA__) {
+      renderData(window.__INITIAL_INVITATION_DATA__);
+    } else {
+      try {
+        const cached = localStorage.getItem('invitation_cache_' + slug);
+        if (cached) {
+          const cachedData = JSON.parse(cached);
+          if (cachedData) {
+            renderData(cachedData);
+          }
         }
-      }
-    } catch (e) {}
+      } catch (e) {}
+    }
 
-    // 2. Background Sync with Live API / Google Sheets
+    // B. Background Sync with Live API / Google Sheets
     try {
       const apiUrl = `/api/public/invitations/${encodeURIComponent(slug)}${guestTo ? '?to=' + encodeURIComponent(guestTo) : ''}`;
       const res = await fetch(apiUrl);

@@ -647,6 +647,199 @@ class GoogleSheetsDB {
       return false;
     }
   }
+
+  async deleteInvitation(id) {
+    return await this._deleteRowByColumn('Invitations', 0, id);
+  }
+
+  // ================= GUESTS =================
+  // Format: ID | InvitationId | Name | Slug | Views | RsvpStatus | CreatedAt
+  async getGuests(invitationId = null) {
+    const rows = await this._getRows('Guests!A2:G');
+    const guests = rows.map(row => ({
+      id: parseInt(row[0]) || 0,
+      invitation_id: parseInt(row[1]) || 0,
+      name: row[2] || '',
+      slug: row[3] || '',
+      views: parseInt(row[4]) || 0,
+      rsvp_status: row[5] || 'belum_konfirmasi',
+      created_at: row[6] || new Date().toISOString()
+    }));
+    return invitationId ? guests.filter(g => g.invitation_id === parseInt(invitationId)) : guests;
+  }
+
+  async addGuest(guest) {
+    const nextId = await this._getNextId('Guests!A2:A');
+    const createdAt = new Date().toISOString();
+    const values = [[
+      nextId, guest.invitation_id, guest.name, guest.slug, guest.views || 0, guest.rsvp_status || 'belum_konfirmasi', createdAt
+    ]];
+    await this._appendRows('Guests!A2:G', values);
+    return { ...guest, id: nextId, created_at: createdAt };
+  }
+
+  async updateGuest(id, updates) {
+    const rows = await this._getRows('Guests!A2:G');
+    const rowIndex = rows.findIndex(row => String(row[0]) === String(id));
+    if (rowIndex === -1) return null;
+    
+    const currentRow = rows[rowIndex];
+    const updatedRow = [
+      currentRow[0],
+      currentRow[1],
+      updates.name !== undefined ? updates.name : currentRow[2],
+      updates.slug !== undefined ? updates.slug : currentRow[3],
+      updates.views !== undefined ? updates.views : currentRow[4],
+      updates.rsvp_status !== undefined ? updates.rsvp_status : currentRow[5],
+      currentRow[6]
+    ];
+    await this._updateRow('Guests', rowIndex + 2, 'A', 'G', updatedRow);
+    return { id: parseInt(updatedRow[0]), invitation_id: parseInt(updatedRow[1]), name: updatedRow[2], slug: updatedRow[3], views: parseInt(updatedRow[4]), rsvp_status: updatedRow[5], created_at: updatedRow[6] };
+  }
+
+  async deleteGuest(id) {
+    return await this._deleteRowByColumn('Guests', 0, id);
+  }
+
+  // ================= RSVPs =================
+  // Format: ID | InvitationId | Name | Status | GuestsCount | Message | BuktiTransferUrl | CreatedAt
+  async getRSVPs(invitationId = null) {
+    const rows = await this._getRows('RSVPs!A2:H');
+    const rsvps = rows.map(row => ({
+      id: parseInt(row[0]) || 0,
+      invitation_id: parseInt(row[1]) || 0,
+      name: row[2] || '',
+      status: row[3] || '',
+      guests_count: parseInt(row[4]) || 1,
+      message: row[5] || '',
+      buktiTransferUrl: row[6] || '',
+      created_at: row[7] || new Date().toISOString()
+    }));
+    return invitationId ? rsvps.filter(r => r.invitation_id === parseInt(invitationId)) : rsvps;
+  }
+
+  async addRSVP(rsvp) {
+    const nextId = await this._getNextId('RSVPs!A2:A');
+    const createdAt = new Date().toISOString();
+    const values = [[
+      nextId, rsvp.invitation_id, rsvp.name, rsvp.status, rsvp.guests_count || 1, rsvp.message || '', rsvp.buktiTransferUrl || '', createdAt
+    ]];
+    await this._appendRows('RSVPs!A2:H', values);
+    return { ...rsvp, id: nextId, created_at: createdAt };
+  }
+
+  async deleteRSVP(id) {
+    return await this._deleteRowByColumn('RSVPs', 0, id);
+  }
+
+  // ================= WISHES =================
+  // Format: ID | InvitationId | Name | Message | Status | CreatedAt
+  async getWishes(invitationId = null) {
+    const rows = await this._getRows('Wishes!A2:F');
+    const wishes = rows.map(row => ({
+      id: parseInt(row[0]) || 0,
+      invitation_id: parseInt(row[1]) || 0,
+      name: row[2] || '',
+      message: row[3] || '',
+      status: row[4] || 'pending',
+      created_at: row[5] || new Date().toISOString()
+    }));
+    return invitationId ? wishes.filter(w => w.invitation_id === parseInt(invitationId)) : wishes;
+  }
+
+  async addWish(wish) {
+    const nextId = await this._getNextId('Wishes!A2:A');
+    const createdAt = new Date().toISOString();
+    const values = [[
+      nextId, wish.invitation_id, wish.name, wish.message || '', wish.status || 'pending', createdAt
+    ]];
+    await this._appendRows('Wishes!A2:F', values);
+    return { ...wish, id: nextId, created_at: createdAt };
+  }
+
+  async updateWish(id, updates) {
+    const rows = await this._getRows('Wishes!A2:F');
+    const rowIndex = rows.findIndex(row => String(row[0]) === String(id));
+    if (rowIndex === -1) return null;
+    
+    const currentRow = rows[rowIndex];
+    const updatedRow = [
+      currentRow[0],
+      currentRow[1],
+      currentRow[2],
+      currentRow[3],
+      updates.status !== undefined ? updates.status : currentRow[4],
+      currentRow[5]
+    ];
+    await this._updateRow('Wishes', rowIndex + 2, 'A', 'F', updatedRow);
+    return { id: parseInt(updatedRow[0]), invitation_id: parseInt(updatedRow[1]), name: updatedRow[2], message: updatedRow[3], status: updatedRow[4], created_at: updatedRow[5] };
+  }
+
+  async deleteWish(id) {
+    return await this._deleteRowByColumn('Wishes', 0, id);
+  }
+
+  // ================= HELPERS =================
+  async _getRows(range) {
+    if (!this.initialized) await this.init();
+    if (!this.sheets) return [];
+    try {
+      const response = await this.sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range });
+      return response.data.values || [];
+    } catch (e) { return []; }
+  }
+
+  async _appendRows(range, values) {
+    if (!this.initialized) await this.init();
+    if (!this.sheets) return;
+    await this.sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID, range, valueInputOption: 'USER_ENTERED', requestBody: { values }
+    });
+  }
+
+  async _updateRow(sheetName, rowNumber, startCol, endCol, rowData) {
+    if (!this.initialized) await this.init();
+    if (!this.sheets) return;
+    await this.sheets.spreadsheets.values.update({
+      spreadsheetId: SPREADSHEET_ID, range: `${sheetName}!${startCol}${rowNumber}:${endCol}${rowNumber}`,
+      valueInputOption: 'USER_ENTERED', requestBody: { values: [rowData] }
+    });
+  }
+
+  async _getNextId(idRange) {
+    const ids = await this._getRows(idRange);
+    if (!ids || ids.length === 0) return 1;
+    const max = Math.max(...ids.map(row => parseInt(row[0]) || 0));
+    return max + 1;
+  }
+
+  async _deleteRowByColumn(sheetTitle, colIndex, matchValue) {
+    if (!this.initialized) await this.init();
+    if (!this.sheets) return false;
+    try {
+      const response = await this.sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${sheetTitle}!A2:Z` });
+      const rows = response.data.values;
+      if (!rows) return false;
+      const rowIndex = rows.findIndex(row => String(row[colIndex]) === String(matchValue));
+      if (rowIndex === -1) return false;
+      
+      const spreadsheet = await this.sheets.spreadsheets.get({ spreadsheetId: SPREADSHEET_ID });
+      const sheet = spreadsheet.data.sheets.find(s => s.properties.title === sheetTitle);
+      if (!sheet) return false;
+      const sheetId = sheet.properties.sheetId;
+      
+      await this.sheets.spreadsheets.batchUpdate({
+        spreadsheetId: SPREADSHEET_ID,
+        requestBody: {
+          requests: [{ deleteDimension: { range: { sheetId: sheetId, dimension: 'ROWS', startIndex: rowIndex + 1, endIndex: rowIndex + 2 } } }]
+        }
+      });
+      return true;
+    } catch (e) {
+      console.error(`Failed to delete row in ${sheetTitle}:`, e);
+      return false;
+    }
+  }
 }
 
 export default new GoogleSheetsDB();

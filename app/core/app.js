@@ -348,45 +348,69 @@
   async function init() {
     // Determine active slug from URL ?draft=slug
     const params = new URLSearchParams(window.location.search);
-    const slugParam = params.get("draft");
+    const slugParam = params.get("draft") || params.get("invite") || params.get("slug");
     if (slugParam) activeSlug = slugParam.trim().toLowerCase();
 
+    // Check template param if specified in URL
+    const templateParam = params.get("template");
+
     // Load existing draft or load defaults
-    const existing = await window.publishService.getDraft(activeSlug);
+    let existing = null;
+    try {
+      if (window.publishService && typeof window.publishService.getDraft === 'function') {
+        existing = await window.publishService.getDraft(activeSlug);
+      }
+    } catch (e) {
+      console.warn("getDraft failed, fallback to defaults:", e);
+    }
+
+    const universalDefaults = window.UniversalDefaults || {};
+
     if (existing) {
       activeDraft = existing;
+      if (!activeDraft.templateId && templateParam) activeDraft.templateId = templateParam;
+      if (!activeDraft.templateId) activeDraft.templateId = "luxury-gold";
       // Deep merge defaults to guarantee all nested fields exist
-      activeDraft.data = deepMerge(activeDraft.data || {}, window.UniversalDefaults);
+      activeDraft.data = deepMerge(activeDraft.data || {}, universalDefaults);
     } else {
       activeDraft = {
         id: `invitation-${Date.now()}`,
-        templateId: "luxury-gold",
+        templateId: templateParam || "luxury-gold",
         status: "draft",
-        data: clone(window.UniversalDefaults)
+        data: clone(universalDefaults)
       };
       try {
-        await window.publishService.saveDraft(activeSlug, activeDraft);
+        if (window.publishService && typeof window.publishService.saveDraft === 'function') {
+          await window.publishService.saveDraft(activeSlug, activeDraft);
+        }
       } catch (err) {
         console.warn("Initial saveDraft failed:", err);
       }
     }
+
+    // Ensure fundamental data structures exist
+    if (!activeDraft.data) activeDraft.data = clone(universalDefaults);
+    if (!activeDraft.data.general) activeDraft.data.general = {};
+    if (!activeDraft.data.couple) activeDraft.data.couple = {};
+    if (!activeDraft.data.event) activeDraft.data.event = {};
+    if (!activeDraft.data.decoration) activeDraft.data.decoration = {};
 
     // Set initial Javanese theme presets if it is Nusantara Heritage template and empty
     if (activeDraft.templateId === "nusantara-heritage") {
       if (!activeDraft.data.general.cultureTheme) {
         activeDraft.data.general.cultureTheme = "javanese";
       }
-      if (!activeDraft.data.heritage) {
+      if (!activeDraft.data.heritage && CulturalPresets.javanese) {
         activeDraft.data.heritage = clone(CulturalPresets.javanese);
         activeDraft.data.heritage.theme = "javanese";
       }
-      if (!activeDraft.data.program) {
+      if (!activeDraft.data.program && CulturalPresets.javanese?.program) {
         activeDraft.data.program = clone(CulturalPresets.javanese.program);
       }
-      if (!activeDraft.data.accommodation) {
+      if (!activeDraft.data.accommodation && CulturalPresets.javanese?.accommodation) {
         activeDraft.data.accommodation = clone(CulturalPresets.javanese.accommodation);
       }
-      if (!activeDraft.data.attire) {
+      if (!activeDraft.data.attire && CulturalPresets.javanese?.attirePreset) {
         activeDraft.data.attire = {
           introText: CulturalPresets.javanese.attirePreset.introText,
           colors: clone(CulturalPresets.javanese.attirePreset.colors)
@@ -394,16 +418,18 @@
       }
     }
 
-    $("publish-slug").value = activeSlug;
+    if ($("publish-slug")) $("publish-slug").value = activeSlug;
 
-    // Load template iframe
+    // Load template iframe with solid path
     const iframe = $("previewIframe");
-    iframe.src = `../../templates/${activeDraft.templateId}/index.html`;
-    
-    // Iframe loaded callback
-    iframe.onload = () => {
-      updatePreview();
-    };
+    if (iframe) {
+      iframe.src = `../../templates/${activeDraft.templateId || 'luxury-gold'}/index.html`;
+      
+      // Iframe loaded callback
+      iframe.onload = () => {
+        updatePreview();
+      };
+    }
 
     // Toggle template-specific sections
     updateTemplateSpecificVisibility();
@@ -1403,6 +1429,10 @@
         }
       };
     });
+
+    // Auto open first accordion in the active tab panel
+    const firstAcc = document.querySelector(".tab-panel.active .accordion-item");
+    if (firstAcc) firstAcc.classList.add("active");
   }
 
   // Device toggling (responsive mockup frame sizes)

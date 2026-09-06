@@ -516,6 +516,7 @@
     renderAlbumList();
     renderGuestList();
     renderRSVPList();
+    populateTemplateSelector();
 
     // Nusantara Heritage lists
     if (activeDraft.templateId === "nusantara-heritage") {
@@ -1521,6 +1522,43 @@
       } else {
         el.classList.add("hidden-template-specific");
       }
+    });
+  }
+
+  function populateTemplateSelector() {
+    const selector = $("templateSelector");
+    if (!selector) return;
+
+    const currentTemplate = activeDraft.templateId || "luxury-gold";
+    selector.querySelectorAll(".asset-option").forEach(opt => {
+      if (opt.dataset.value === currentTemplate) {
+        opt.classList.add("active");
+      } else {
+        opt.classList.remove("active");
+      }
+
+      opt.onclick = () => {
+        const newTemplate = opt.dataset.value;
+        if (newTemplate === activeDraft.templateId) return;
+
+        selector.querySelectorAll(".asset-option").forEach(o => o.classList.remove("active"));
+        opt.classList.add("active");
+
+        activeDraft.templateId = newTemplate;
+        if (!activeDraft.data) activeDraft.data = {};
+        activeDraft.data.templateId = newTemplate;
+
+        // Change iframe template src
+        const iframe = $("previewIframe");
+        if (iframe) {
+          iframe.src = `../../templates/${newTemplate}/index.html`;
+        }
+
+        updateTemplateSpecificVisibility();
+        populateFrameSelector();
+        triggerAutoSave();
+        toast(`Tema template diubah ke: ${newTemplate}`);
+      };
     });
   }
 

@@ -44,24 +44,21 @@
       dom.querySelectorAll('[data-bind="brideBio"]').forEach(el => el.innerHTML = nl(data.couple.brideBio));
 
       // 4. Photos (Hero, Groom, Bride)
-      const heroPhoto = dom.getElementById("heroPhoto");
-      if (heroPhoto) {
-        if (data.general && data.general.photoHero) {
-          heroPhoto.src = safeUrl(data.general.photoHero);
+      const bindImage = (imgEl, url) => {
+        if (!imgEl) return;
+        if (url && typeof url === 'string' && url.trim() !== '' && url.trim() !== '#') {
+          imgEl.src = safeUrl(url.trim());
+          imgEl.style.display = '';
+          imgEl.onerror = () => { imgEl.style.display = 'none'; };
+        } else {
+          imgEl.removeAttribute('src');
+          imgEl.style.display = 'none';
         }
-      }
-      const groomPhoto = dom.getElementById("groomPhoto");
-      if (groomPhoto) {
-        if (data.couple && data.couple.groomPhoto) {
-          groomPhoto.src = safeUrl(data.couple.groomPhoto);
-        }
-      }
-      const bridePhoto = dom.getElementById("bridePhoto");
-      if (bridePhoto) {
-        if (data.couple && data.couple.bridePhoto) {
-          bridePhoto.src = safeUrl(data.couple.bridePhoto);
-        }
-      }
+      };
+
+      bindImage(dom.getElementById("heroPhoto"), data.general && data.general.photoHero);
+      bindImage(dom.getElementById("groomPhoto"), data.couple && data.couple.groomPhoto);
+      bindImage(dom.getElementById("bridePhoto"), data.couple && data.couple.bridePhoto);
 
       // 5. Event Details
       dom.querySelectorAll('[data-bind="specialDay"]').forEach(el => el.innerHTML = esc(data.event.specialDay));

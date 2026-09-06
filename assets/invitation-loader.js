@@ -1,10 +1,10 @@
 /**
- * Universal Invitation Live Loader & Backend Sync
+ * Universal Invitation Live Loader & Backend Sync (Zero-Delay SWR Engine)
  * Features:
- * - Instant Zero-Delay Client Rendering from local cache (SWR Pattern)
- * - Automatic background sync from Google Sheets / Express API
- * - Lifetime URL & Guest Personalization Support
+ * - 0ms Synchronous Client Initial Rendering (No empty '&' or broken image flash)
  * - Real-time RSVP, Guest Wishes & Music Auto-Play integration
+ * - Automatic Template Router Guard (Locks chosen template strictly across refreshes)
+ * - SWR Cache (IndexedDB + LocalStorage) + Live Express API / Google Sheets Sync
  */
 (function () {
   'use strict';
@@ -21,7 +21,7 @@
 
   function getGuestParam() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('to') || '';
+    return params.get('to') || params.get('u') || params.get('guest') || '';
   }
 
   const slug = getSlug();
@@ -35,6 +35,30 @@
     if (window.TemplateAdapter && typeof window.TemplateAdapter.render === 'function') {
       window.TemplateAdapter.render(document, content);
     }
+    applyGuestPersonalization();
+  }
+
+  function applyGuestPersonalization() {
+    const coverGuestEl = document.getElementById('coverGuestName');
+    const guestGreetingEl = document.getElementById('guestGreeting');
+    if (guestTo) {
+      const cleanGuest = decodeURIComponent(guestTo).trim();
+      if (coverGuestEl) coverGuestEl.textContent = cleanGuest;
+      if (guestGreetingEl) {
+        guestGreetingEl.innerHTML = `Kepada Yth. <strong>${escapeHtml(cleanGuest)}</strong>`;
+      }
+    }
+  }
+
+  function getSynchronousCache() {
+    if (!slug) return null;
+    try {
+      const cached = localStorage.getItem('invitation_cache_' + slug);
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch (e) {}
+    return null;
   }
 
   async function getIdbData(key) {
@@ -63,36 +87,53 @@
     });
   }
 
+  // 1. INSTANT 0ms SYNCHRONOUS RENDER (Prevents blank '&' & missing images flash)
+  function renderImmediateFallback() {
+    const syncCache = getSynchronousCache();
+    if (syncCache) {
+      renderData(syncCache);
+    } else if (window.UniversalDefaults) {
+      renderData(window.UniversalDefaults);
+    }
+    applyGuestPersonalization();
+  }
+
+  // Execute immediate 0ms render
+  renderImmediateFallback();
+
   async function loadLiveInvitation() {
     if (!slug) return;
 
-    // 1. Instant Zero-Delay Cache Load (IndexedDB + LocalStorage SWR Strategy)
+    // A. Check IndexedDB in case it has updated content
     try {
       const idbData = await getIdbData('invitation_cache_' + slug);
       if (idbData) {
         renderData(idbData);
-      } else {
-        const cached = localStorage.getItem('invitation_cache_' + slug);
-        if (cached) {
-          const cachedData = JSON.parse(cached);
-          if (cachedData) {
-            renderData(cachedData);
-          }
-        }
       }
     } catch (e) {}
 
-    // 2. Background Sync with Live API / Google Sheets
+    // B. Background Sync with Live API / Google Sheets
     try {
       const apiUrl = `/api/public/invitations/${encodeURIComponent(slug)}${guestTo ? '?to=' + encodeURIComponent(guestTo) : ''}`;
       const res = await fetch(apiUrl);
       if (res.ok) {
         const invite = await res.json();
-        if (invite && invite.content) {
-          renderData(invite.content);
-          try {
-            localStorage.setItem('invitation_cache_' + slug, JSON.stringify(invite.content));
-          } catch (e) {}
+        if (invite) {
+          // Template Consistency Guard: Ensure browser is on the template assigned to this invitation
+          const currentPath = window.location.pathname;
+          const targetTemplate = invite.template_id || 'luxury-gold';
+          if (targetTemplate && !currentPath.includes(`/templates/${targetTemplate}/`)) {
+            const newUrl = `/templates/${targetTemplate}/index.html${window.location.search}`;
+            window.location.replace(newUrl);
+            return;
+          }
+
+          if (invite.content && Object.keys(invite.content).length > 0) {
+            renderData(invite.content);
+            try {
+              localStorage.setItem('invitation_cache_' + slug, JSON.stringify(invite.content));
+            } catch (e) {}
+          }
         }
       }
     } catch (e) {
@@ -239,6 +280,7 @@
   }
 
   function init() {
+    renderImmediateFallback();
     if (!window.parent || window.parent === window.self) {
       loadLiveInvitation();
       loadLiveWishes();

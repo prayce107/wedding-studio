@@ -222,7 +222,23 @@
         } catch (e) {}
       }
 
-      // 3. Try Remote Server API
+      // 3. Try Remote Server Public API
+      try {
+        const pubRes = await fetch(`/api/public/invitations/${encodeURIComponent(slug)}`);
+        if (pubRes.ok) {
+          const pubData = await pubRes.json();
+          if (pubData && pubData.content && Object.keys(pubData.content).length > 0) {
+            return {
+              id: `invitation-${pubData.id || slug}`,
+              templateId: pubData.template_id || (cachedMeta && cachedMeta.templateId) || 'luxury-gold',
+              status: 'active',
+              data: pubData.content
+            };
+          }
+        }
+      } catch (e) {}
+
+      // 4. Try User Authenticated Dashboard API
       try {
         const all = await this.listAll();
         const item = all.find(i => i.slug === slug);
@@ -254,7 +270,7 @@
       if (cachedContent) {
         return {
           id: `invitation-cached`,
-          templateId: cachedMeta?.templateId || "luxury-gold",
+          templateId: cachedMeta?.templateId || (cachedContent && cachedContent.templateId) || "luxury-gold",
           status: "active",
           data: cachedContent
         };

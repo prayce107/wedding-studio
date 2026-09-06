@@ -5,7 +5,7 @@ const UniversalDefaults = {
     shortNames: "A & R",
     date: "20 · 10 · 2026",
     intro: "Dengan penuh rasa syukur dan bahagia, kami mengundang Anda untuk hadir dan menjadi bagian dari hari istimewa kami.",
-    photoHero: "",
+    photoHero: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=85",
     coupleIntro: "Dengan penuh cinta, kami memperkenalkan dua hati yang akan memulai perjalanan baru bersama.",
     footerText: "Terima kasih atas doa, cinta, dan kehadirannya."
   },
@@ -13,11 +13,11 @@ const UniversalDefaults = {
     groomName: "Raka Pratama",
     groomParents: "Putra dari Bapak Ahmad Pratama\n& Ibu Siti Rahma",
     groomBio: "A simple man, grateful for every chapter.",
-    groomPhoto: "",
+    groomPhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
     brideName: "Aulia Maharani",
     brideParents: "Putri dari Bapak Budi Wijaya\n& Ibu Rina Wulandari",
     brideBio: "A gentle soul with a beautiful heart.",
-    bridePhoto: ""
+    bridePhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80"
   },
   event: {
     specialDay: "Our Special Day",

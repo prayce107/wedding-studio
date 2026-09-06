@@ -38,12 +38,17 @@ app.use('/app', express.static(path.join(__dirname, '..', 'app')));
 // Clean Pretty Lifetime URLs for published invitations
 app.get(['/i/:slug', '/invitation/:slug'], async (req, res) => {
   const slug = req.params.slug.toLowerCase().trim();
-  let invite = await googleSheetsDB.getInvitationBySlug(slug);
+  
+  // 1. Instant Zero-Delay Memory Lookup First (<1ms)
+  let invite = db.findOne('invitations', i => i.slug.toLowerCase().trim() === slug);
   if (!invite) {
-    invite = db.findOne('invitations', i => i.slug.toLowerCase().trim() === slug);
+    invite = await googleSheetsDB.getInvitationBySlug(slug);
+    if (invite) {
+      db.insert('invitations', invite);
+    }
   }
   
-  const templateId = (invite && invite.template_id) || 'luxury-gold';
+  const templateId = (invite && (invite.template_id || invite.templateId || (invite.content && invite.content.templateId))) || 'luxury-gold';
   const toParam = req.query.to ? `&to=${encodeURIComponent(req.query.to)}` : '';
   res.redirect(302, `/templates/${templateId}/index.html?invite=${encodeURIComponent(slug)}${toParam}`);
 });

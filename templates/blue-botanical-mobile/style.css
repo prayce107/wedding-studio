@@ -19,6 +19,11 @@
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
+
+img:not([src]), img[src=""], img[src="#"] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
   background: var(--page-bg);

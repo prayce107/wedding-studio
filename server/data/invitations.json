@@ -277,5 +277,42 @@
         "name2": "Raka"
       }
     }
+  },
+  {
+    "id": 10,
+    "created_at": "2026-09-06T11:29:26.718Z",
+    "user_id": 1,
+    "category": "Pernikahan",
+    "template_id": "nusantara-heritage",
+    "slug": "test-pernikahan-aulia",
+    "title": "Aulia & Raka",
+    "status": "active",
+    "content": {
+      "general": {
+        "name1": "Aulia",
+        "name2": "Raka",
+        "date": "20 Okt 2026"
+      },
+      "couple": {
+        "groomName": "Raka Pratama",
+        "brideName": "Aulia Maharani"
+      }
+    }
+  },
+  {
+    "id": 11,
+    "created_at": "2026-09-06T11:29:35.845Z",
+    "user_id": 1,
+    "category": "Pernikahan",
+    "template_id": "korean-blossom",
+    "slug": "korean-love-story",
+    "title": "Hana & Minho",
+    "status": "active",
+    "content": {
+      "general": {
+        "name1": "Hana",
+        "name2": "Minho"
+      }
+    }
   }
 ]

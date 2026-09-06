@@ -105,14 +105,22 @@
       setText(dom, "giftTitle", gift.giftTitle);
       setText(dom, "giftIntro", gift.giftIntro);
 
-      const coverPhoto = dom.getElementById("coverPhoto");
-      if (coverPhoto && general.photoHero) coverPhoto.src = safeUrl(general.photoHero);
-      const heroPhoto = dom.getElementById("heroPhoto");
-      if (heroPhoto && general.photoHero) heroPhoto.src = safeUrl(general.photoHero);
-      const groomPhoto = dom.getElementById("groomPhoto");
-      if (groomPhoto && couple.groomPhoto) groomPhoto.src = safeUrl(couple.groomPhoto);
-      const bridePhoto = dom.getElementById("bridePhoto");
-      if (bridePhoto && couple.bridePhoto) bridePhoto.src = safeUrl(couple.bridePhoto);
+      const bindImage = (imgEl, url) => {
+        if (!imgEl) return;
+        if (url && typeof url === 'string' && url.trim() !== '' && url.trim() !== '#') {
+          imgEl.src = safeUrl(url.trim());
+          imgEl.style.display = '';
+          imgEl.onerror = () => { imgEl.style.display = 'none'; };
+        } else {
+          imgEl.removeAttribute('src');
+          imgEl.style.display = 'none';
+        }
+      };
+
+      bindImage(dom.getElementById("coverPhoto"), general.photoHero);
+      bindImage(dom.getElementById("heroPhoto"), general.photoHero);
+      bindImage(dom.getElementById("groomPhoto"), couple.groomPhoto);
+      bindImage(dom.getElementById("bridePhoto"), couple.bridePhoto);
 
       const urlParams = new URLSearchParams(window.location.search);
       const guestName = urlParams.get("to");

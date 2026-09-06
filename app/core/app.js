@@ -1478,8 +1478,9 @@
         if (!active) {
           item.classList.add("active");
           
-          // Auto-open invitation in preview when entering inside sections
-          if (!header.textContent.includes("Sampul") && !header.textContent.includes("Cover")) {
+          // Auto-open invitation in preview when entering content sections (skip cover, sampul, and media/music)
+          const text = header.textContent.toLowerCase();
+          if (!text.includes("sampul") && !text.includes("cover") && !text.includes("musik") && !text.includes("media") && !text.includes("video")) {
             triggerOpenInvitation();
           }
         }

@@ -227,12 +227,15 @@
       const gallery = dom.getElementById("gallery");
       if (gallery) {
         const album = galleryData.album || [];
-        gallery.innerHTML = album.length ? album.map((x, i) => `
-          <figure data-src="${esc(x.src)}">
-            <img loading="lazy" src="${esc(x.src)}" alt="${esc(x.caption || `Album ${i + 1}`)}">
+        gallery.innerHTML = album.length ? album.map((x, i) => {
+          const src = safeUrl(x.src);
+          return `
+          <figure data-src="${src}">
+            <img loading="lazy" src="${src}" alt="${esc(x.caption || `Album ${i + 1}`)}">
             <figcaption>${esc(x.caption || "")}</figcaption>
           </figure>
-        `).join("") : `<div class="empty-card">Belum ada foto album.</div>`;
+        `;
+        }).join("") : `<div class="empty-card">Belum ada foto album.</div>`;
 
         gallery.querySelectorAll("figure").forEach(fig => {
           fig.addEventListener("click", () => {

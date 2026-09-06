@@ -51,19 +51,38 @@
         console.warn('LocalStorage quota notice (IndexedDB is handling large payload):', lsErr);
       }
 
-      if (!token) {
-        return { success: true, offline: true };
-      }
-
-      const all = await this.listAll();
-      const existing = all.find(i => i.slug === slug);
-      
+      // 3. Always sync to server backend (instant cross-device availability)
       const title = invitation.data?.general?.name1 ? 
         `${invitation.data.general.name1} & ${invitation.data.general.name2}` : 
         (invitation.data?.opening?.couple || slug);
 
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        await fetch('/api/public/publish', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            slug: slug,
+            templateId: invitation.templateId || "luxury-gold",
+            title: title,
+            content: invitation.data
+          })
+        });
+      } catch (netErr) {
+        console.warn('Backend draft sync notice:', netErr);
+      }
+
+      if (!token) {
+        return { success: true, offline: false };
+      }
+
+      const all = await this.listAll();
+      const existing = all.find(i => i.slug === slug);
+
       if (existing && existing._dbId) {
-        // Update existing invitation
+        // Update existing user dashboard invitation
         const res = await fetch(`/api/invitations/${existing._dbId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -74,13 +93,11 @@
             slug: slug
           })
         });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.message || 'Gagal menyimpan draft.');
+        if (res.ok) {
+          return await res.json();
         }
-        return await res.json();
       } else {
-        // Create new invitation
+        // Create user dashboard invitation
         const res = await fetch('/api/invitations', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -92,31 +109,27 @@
           })
         });
         
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.message || 'Gagal membuat undangan baru.');
+        if (res.ok) {
+          const created = await res.json();
+          if (created.id && invitation.data) {
+            await fetch(`/api/invitations/${created.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify({ content: invitation.data, status: "active" })
+            });
+          }
+          return { success: true, id: created.id };
         }
-
-        const created = await res.json();
-        
-        // Update content immediately
-        if (created.id && invitation.data) {
-          await fetch(`/api/invitations/${created.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ content: invitation.data, status: "active" })
-          });
-        }
-        
-        return { success: true, id: created.id };
       }
+
+      return { success: true };
     },
     
     async publish(slug, invitation) {
       const token = getToken();
       const idb = getIdb();
 
-      // Cache locally in IndexedDB & LocalStorage
+      // 1. Cache locally in IndexedDB & LocalStorage
       if (idb && invitation && invitation.data) {
         try {
           await idb.set('invitation_cache_' + slug, invitation.data);
@@ -128,30 +141,50 @@
         }
       } catch (e) {}
 
-      // Save and activate in DB
+      // 2. Unconditionally sync to server backend (makes it active live for all devices)
+      const title = invitation.data?.general?.name1 ? 
+        `${invitation.data.general.name1} & ${invitation.data.general.name2}` : 
+        (invitation.data?.opening?.couple || slug);
+
       try {
-        await this.saveDraft(slug, invitation);
-      } catch (e) {}
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const pubRes = await fetch('/api/public/publish', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            slug: slug,
+            templateId: invitation.templateId || "luxury-gold",
+            title: title,
+            content: invitation.data
+          })
+        });
+        if (!pubRes.ok) {
+          const err = await pubRes.json().catch(() => ({}));
+          console.warn('Publish backend notice:', err.message);
+        }
+      } catch (e) {
+        console.warn('Network sync notice on publish:', e);
+      }
 
       if (token) {
-        const all = await this.listAll();
-        const existing = all.find(i => i.slug === slug);
-        if (existing && existing._dbId) {
-          const title = invitation.data?.general?.name1 ? 
-            `${invitation.data.general.name1} & ${invitation.data.general.name2}` : 
-            (invitation.data?.opening?.couple || slug);
-
-          await fetch(`/api/invitations/${existing._dbId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({
-              title: title,
-              content: invitation.data,
-              status: "active",
-              slug: slug
-            })
-          });
-        }
+        try {
+          const all = await this.listAll();
+          const existing = all.find(i => i.slug === slug);
+          if (existing && existing._dbId) {
+            await fetch(`/api/invitations/${existing._dbId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify({
+                title: title,
+                content: invitation.data,
+                status: "active",
+                slug: slug
+              })
+            });
+          }
+        } catch (e) {}
       }
 
       return { 

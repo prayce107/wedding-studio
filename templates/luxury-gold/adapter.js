@@ -191,12 +191,15 @@
       const gallery = dom.getElementById("gallery");
       if (gallery) {
         const album = data.gallery.album || [];
-        gallery.innerHTML = album.length ? album.map((x, i) => `
-          <figure data-src="${esc(x.src)}">
-            <img loading="lazy" src="${esc(x.src)}" alt="Album ${i + 1}">
+        gallery.innerHTML = album.length ? album.map((x, i) => {
+          const src = safeUrl(x.src);
+          return `
+          <figure data-src="${src}">
+            <img loading="lazy" src="${src}" alt="Album ${i + 1}">
             <figcaption>${esc(x.caption || "Our moment")}</figcaption>
           </figure>
-        `).join("") : `<div class="publish-box">Belum ada foto album.</div>`;
+        `;
+        }).join("") : `<div class="publish-box">Belum ada foto album.</div>`;
 
         // Wire gallery click event
         gallery.querySelectorAll("figure").forEach(fig => {

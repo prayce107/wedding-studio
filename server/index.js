@@ -694,18 +694,83 @@ app.delete('/api/invitations/:id/wishes/:wishId', authenticateToken, async (req,
   res.json({ success });
 });
 
-// ================= PUBLIC INVITATION VIEWS (LIGHTNING FAST) =================
+// ================= PUBLIC INVITATION VIEWS & PUBLISHING (LIGHTNING FAST) =================
+
+// Public Publish / Auto-Save endpoint (Works instantly from any device with or without login)
+app.post(['/api/public/publish', '/api/public/save-draft'], optionalAuth, async (req, res) => {
+  try {
+    const { slug, templateId, template_id, title, content, data } = req.body;
+    const cleanSlug = String(slug || '').toLowerCase().trim().replace(/[^a-z0-9-_]/g, '-');
+    if (!cleanSlug) {
+      return res.status(400).json({ message: 'Slug/URL undangan tidak boleh kosong.' });
+    }
+
+    const invitationContent = content || data || {};
+    const effectiveTemplateId = templateId || template_id || (invitationContent && invitationContent.templateId) || 'luxury-gold';
+    const effectiveTitle = title || (invitationContent.general && `${invitationContent.general.name1} & ${invitationContent.general.name2}`) || cleanSlug;
+    const userId = req.user ? req.user.id : 1;
+
+    // 1. Instant local DB save
+    let localInvite = db.findOne('invitations', i => i.slug.toLowerCase().trim() === cleanSlug);
+    if (localInvite) {
+      localInvite = db.update('invitations', localInvite.id, {
+        title: effectiveTitle,
+        template_id: effectiveTemplateId,
+        content: invitationContent,
+        status: 'active'
+      });
+    } else {
+      localInvite = db.insert('invitations', {
+        user_id: userId,
+        category: 'Pernikahan',
+        template_id: effectiveTemplateId,
+        slug: cleanSlug,
+        title: effectiveTitle,
+        status: 'active',
+        content: invitationContent
+      });
+    }
+
+    // 2. Background Google Sheets sync
+    googleSheetsDB.updateInvitation(cleanSlug, {
+      title: effectiveTitle,
+      template_id: effectiveTemplateId,
+      content: invitationContent,
+      status: 'active'
+    }).catch(err => {
+      console.warn('Google Sheets background sync notice:', err.message);
+    });
+
+    res.json({
+      success: true,
+      slug: cleanSlug,
+      url: `/i/${cleanSlug}`,
+      invitation: localInvite
+    });
+  } catch (err) {
+    console.error('Public publish error:', err);
+    res.status(500).json({ message: 'Gagal menerbitkan undangan: ' + err.message });
+  }
+});
 
 app.get('/api/public/invitations/:slug', async (req, res) => {
   const slug = req.params.slug.toLowerCase().trim();
-  const invite = await googleSheetsDB.getInvitationBySlug(slug);
+  
+  // Instant Zero-Delay Memory Lookup First (<1ms)
+  let invite = db.findOne('invitations', i => i.slug.toLowerCase().trim() === slug);
+  if (!invite) {
+    invite = await googleSheetsDB.getInvitationBySlug(slug);
+    if (invite) {
+      db.insert('invitations', invite);
+    }
+  }
 
   if (!invite) {
     return res.status(404).json({ message: 'Undangan tidak ditemukan.' });
   }
 
   // Set fast cache headers
-  res.set('Cache-Control', 'public, max-age=10, s-maxage=60, stale-while-revalidate=300');
+  res.set('Cache-Control', 'public, max-age=5, s-maxage=30, stale-while-revalidate=120');
 
   // Increment views in background
   googleSheetsDB.updateInvitation(invite.slug, { views: (invite.views || 0) + 1 }).catch(e => {});

@@ -54,7 +54,9 @@
       topbar?.classList.add("visible");
       bottomNav?.classList.add("visible");
 
-      if (music?.src) {
+      // Try to autoplay music only for real guest visits (never inside builder iframe)
+      const isIframe = window.parent && window.parent !== window.self;
+      if (music?.src && !isIframe) {
         music.play().then(() => {
           musicOn = true;
           window.__pendingMusicAutoplay = false;
@@ -62,7 +64,7 @@
         }).catch(() => {
           window.__pendingMusicAutoplay = true;
         });
-      } else {
+      } else if (!isIframe) {
         window.__pendingMusicAutoplay = true;
       }
 

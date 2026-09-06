@@ -256,5 +256,26 @@
         "animation": "gold-rain"
       }
     }
+  },
+  {
+    "id": 9,
+    "created_at": "2026-09-06T08:22:15.720Z",
+    "user_id": 1,
+    "category": "Pernikahan",
+    "template_id": "luxury-gold",
+    "slug": "test-check",
+    "title": "Aulia & Raka",
+    "status": "active",
+    "content": {
+      "couple": {
+        "groomName": "Raka Pratama",
+        "brideName": "Aulia Maharani"
+      },
+      "general": {
+        "date": "20 � 10 � 2026",
+        "name1": "Aulia",
+        "name2": "Raka"
+      }
+    }
   }
 ]

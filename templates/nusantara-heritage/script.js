@@ -50,8 +50,9 @@
         document.body.classList.remove("lock");
         document.body.classList.add("invitation-open");
         
-        // Try to autoplay music
-        if (music && music.src) {
+        // Try to autoplay music only for real guest visits (never inside builder iframe)
+        const isIframe = window.parent && window.parent !== window.self;
+        if (music && music.src && !isIframe) {
           music.play()
             .then(() => {
               musicOn = true;
@@ -61,7 +62,7 @@
             .catch(() => {
               window.__pendingMusicAutoplay = true;
             });
-        } else {
+        } else if (!isIframe) {
           window.__pendingMusicAutoplay = true;
         }
       }, 400);

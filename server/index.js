@@ -450,9 +450,9 @@ app.post('/api/invitations', authenticateToken, async (req, res) => {
       videoUrl: ""
     },
     music: {
-      music: "https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3",
-      url: "https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3",
-      src: "https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3"
+      music: "/assets/audio/romantic-wedding.mp3",
+      url: "/assets/audio/romantic-wedding.mp3",
+      src: "/assets/audio/romantic-wedding.mp3"
     },
     guestBook: {
       guestTitle: "Ucapan & Doa",

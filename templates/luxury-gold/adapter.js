@@ -350,9 +350,10 @@
             music.src = safeUrl(musicSrc);
             music.load();
 
-            // Only autoplay if invitation is already opened (cover already removed)
+            // Autoplay only on standalone public view when invitation was already opened, never in builder iframe
+            const isIframe = window.parent && window.parent !== window.self;
             const isOpened = dom.body.classList.contains("invitation-open") || window.__invitationOpened === true;
-            if (isOpened) {
+            if (isOpened && !isIframe) {
               const playPromise = music.play();
               if (playPromise) {
                 playPromise.then(() => {
@@ -406,6 +407,13 @@
     if (e.data && e.data.type === "OPEN_INVITATION") {
       const openBtn = document.getElementById("openBtn");
       if (openBtn) openBtn.click();
+    }
+    if (e.data && (e.data.type === "STOP_AUDIO" || e.data.type === "PAUSE_AUDIO")) {
+      const music = document.getElementById("music");
+      if (music) {
+        music.pause();
+        if (e.data.type === "STOP_AUDIO") music.currentTime = 0;
+      }
     }
   });
 

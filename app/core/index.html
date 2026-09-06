@@ -340,26 +340,41 @@
                         <label>Pilih Koleksi Lagu Romantis</label>
                         <select id="presetMusicSelect" style="width: 100%; background: #080604; border: 1px solid var(--border); color: var(--cream); padding: 11px 14px; border-radius: 8px; font-size: 13px; outline: none; margin-bottom: 10px;">
                           <option value="">-- Pilih Musik Bawaan --</option>
-                          <option value="https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3">Romantic Wedding Tune (Piano & Strings)</option>
-                          <option value="https://assets.mixkit.co/music/preview/mixkit-wedding-acoustic-guitar-melody-123.mp3">Acoustic Love Guitar</option>
-                          <option value="https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3">Serene Harmony Piano</option>
-                          <option value="https://assets.mixkit.co/music/preview/mixkit-sweet-love-story-568.mp3">Sweet Love Story</option>
-                          <option value="https://assets.mixkit.co/music/preview/mixkit-wedding-bells-cinematic-789.mp3">Cinematic Wedding Day</option>
+                          <option value="/assets/audio/romantic-wedding.mp3">Romantic Wedding Tune (Piano & Strings)</option>
+                          <option value="/assets/audio/acoustic-love.mp3">Acoustic Love Guitar</option>
+                          <option value="/assets/audio/serene-piano.mp3">Serene Harmony Piano</option>
+                          <option value="/assets/audio/sweet-love.mp3">Sweet Love Story</option>
+                          <option value="/assets/audio/cinematic-day.mp3">Cinematic Wedding Day</option>
                         </select>
                       </div>
                       <div class="field full">
                         <label>Upload File MP3 Sendiri (Cloud CDN)</label>
                         <div class="upload-box">
                           <input type="file" accept="audio/*" id="upload-music">
-                          <div class="upload-placeholder">Pilih MP3 lagu romantis</div>
+                          <div class="upload-placeholder" id="musicUploadLabel">Pilih MP3 lagu romantis</div>
                         </div>
                       </div>
                       <div class="field full">
                         <label>Atau Direct URL Musik MP3</label>
-                        <div class="input-action-row">
-                          <input type="text" data-edit="music.music" id="musicUrlInput" placeholder="https://res.cloudinary.com/.../song.mp3">
-                          <button class="btn-outline" id="testMusicBtn" type="button" style="white-space:nowrap;">▶ Play</button>
+                        <input type="text" data-edit="music.music" id="musicUrlInput" placeholder="/assets/audio/... atau https://..." style="width: 100%; margin-bottom: 10px;">
+                      </div>
+                      <!-- Dedicated Audio Control Center for Editor -->
+                      <div class="field full" style="background: rgba(213, 161, 93, 0.06); border: 1px solid rgba(213, 161, 93, 0.25); border-radius: 10px; padding: 12px; margin-top: 4px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                          <span style="font-size: 12px; font-weight: 600; color: var(--gold, #d5a15d);">Kontrol Audio Editor:</span>
+                          <span id="musicPlayerStatus" style="font-size: 11px; color: #a0a0a0;">Tidak ada audio diputar</span>
                         </div>
+                        <div style="display: flex; gap: 8px;">
+                          <button class="btn-outline" id="playMusicBtn" type="button" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 12px; font-size: 12px; font-weight: 600; background: rgba(213, 161, 93, 0.15); border-color: var(--gold, #d5a15d); color: #fff; cursor: pointer; border-radius: 6px;">
+                            <span>▶</span> Putar Musik
+                          </button>
+                          <button class="btn-outline" id="stopMusicBtn" type="button" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 12px; font-size: 12px; font-weight: 600; background: rgba(255, 60, 60, 0.12); border-color: rgba(255, 60, 60, 0.35); color: #ff9999; cursor: pointer; border-radius: 6px;">
+                            <span>⏹</span> Stop Musik
+                          </button>
+                        </div>
+                        <p style="font-size: 11px; color: rgba(255, 255, 255, 0.55); margin: 8px 0 0 0; line-height: 1.4;">
+                          💡 <em>Musik tidak berbunyi otomatis saat mengedit. Musik akan otomatis diputar saat tamu membuka undangan (klik "Buka Undangan").</em>
+                        </p>
                       </div>
                     </div>
                   </div>

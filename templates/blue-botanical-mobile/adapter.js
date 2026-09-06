@@ -156,37 +156,6 @@
         window.TemplateScript.updateCountdown(event.target);
       }
 
-      const music = dom.getElementById("music");
-      if (music) {
-        const src = typeof musicData === 'string' ? musicData : (musicData.music || musicData.url || musicData.src || musicData.audio || "");
-        if (src) {
-          const currentSrc = music.getAttribute("data-current-src");
-          if (currentSrc !== src) {
-            music.setAttribute("data-current-src", src);
-            music.src = safeUrl(src);
-            music.load();
-
-            // If invitation is already opened, attempt autoplay
-            if (window.__pendingMusicAutoplay || !dom.body.classList.contains("locked") || window.__invitationOpened) {
-              const playPromise = music.play();
-              if (playPromise) {
-                playPromise.then(() => {
-                  window.__pendingMusicAutoplay = false;
-                  const musicBtn = dom.getElementById("musicBtn");
-                  if (musicBtn) musicBtn.textContent = "❚❚";
-                }).catch(() => {
-                  window.__pendingMusicAutoplay = true;
-                });
-              }
-            }
-          }
-        } else {
-          music.removeAttribute("src");
-          music.removeAttribute("data-current-src");
-          music.load();
-        }
-      }
-
       const rek = dom.getElementById("angpouRek");
       if (rek) rek.textContent = gift.angpouRek || "";
 
@@ -306,9 +275,10 @@
             music.src = safeUrl(musicSrc);
             music.load();
 
-            // Only autoplay if invitation is already opened (welcome screen removed)
+            // Autoplay only on standalone public view when invitation was already opened, never in builder iframe
+            const isIframe = window.parent && window.parent !== window.self;
             const isOpened = !dom.getElementById("welcome") || dom.body.classList.contains("invitation-open") || window.__invitationOpened === true;
-            if (isOpened) {
+            if (isOpened && !isIframe) {
               const playPromise = music.play();
               if (playPromise) {
                 playPromise.then(() => {
@@ -341,6 +311,13 @@
     if (e.data && e.data.type === "OPEN_INVITATION") {
       const openBtn = document.getElementById("openBtn");
       if (openBtn) openBtn.click();
+    }
+    if (e.data && (e.data.type === "STOP_AUDIO" || e.data.type === "PAUSE_AUDIO")) {
+      const music = document.getElementById("music");
+      if (music) {
+        music.pause();
+        if (e.data.type === "STOP_AUDIO") music.currentTime = 0;
+      }
     }
   });
 

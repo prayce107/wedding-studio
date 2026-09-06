@@ -700,17 +700,26 @@
       $("preview-bride").classList.remove("hidden");
     }
     
-    // Populate music file label & input if exists
+    // Populate music file label & input if exists (with legacy Mixkit auto-upgrade)
     const musicData = activeDraft.data.music;
-    const currentMusicUrl = typeof musicData === 'string' ? musicData : (musicData?.music || musicData?.url || musicData?.src || "");
+    let currentMusicUrl = typeof musicData === 'string' ? musicData : (musicData?.music || musicData?.url || musicData?.src || "");
+    if (currentMusicUrl && currentMusicUrl.includes("mixkit.co")) {
+      currentMusicUrl = "/assets/audio/romantic-wedding.mp3";
+      activeDraft.data.music = {
+        music: currentMusicUrl,
+        url: currentMusicUrl,
+        src: currentMusicUrl
+      };
+      triggerAutoSave();
+    }
     const musicInput = document.querySelector('[data-edit="music.music"]') || $("musicUrlInput");
     if (musicInput && currentMusicUrl) {
       musicInput.value = currentMusicUrl;
     }
-    const musicPlaceholder = $("upload-music")?.nextElementSibling;
+    const musicPlaceholder = $("musicUploadLabel") || $("upload-music")?.nextElementSibling;
     if (musicPlaceholder) {
       if (currentMusicUrl) {
-        musicPlaceholder.textContent = "Musik Terpasang: (Lagu Simpanan)";
+        musicPlaceholder.textContent = "Musik Terpasang: (Lagu Siap)";
       } else {
         musicPlaceholder.textContent = "Pilih file musik MP3 / Audio...";
       }
@@ -918,6 +927,7 @@
       const file = e.target.files[0];
       if (!file) return;
       
+      stopEditorAudio();
       toast("Mengunggah file musik...");
       try {
         const url = await window.storageService.uploadFile(file);
@@ -931,16 +941,10 @@
         const musicInput = document.querySelector('[data-edit="music.music"]') || $("musicUrlInput");
         if (musicInput) musicInput.value = url;
         
-        const placeholder = $("upload-music").nextElementSibling;
+        const placeholder = $("musicUploadLabel") || $("upload-music").nextElementSibling;
         if (placeholder) placeholder.textContent = "Musik Terpasang: " + file.name;
         
-        // Stop current test player if running
-        if (previewAudio) {
-          previewAudio.pause();
-          previewAudio = null;
-        }
-        if (testBtn) testBtn.textContent = "▶ Putar Preview";
-
+        updateAudioPlayerStatus("Musik baru siap diuji (Klik Putar)");
         updatePreview();
         triggerAutoSave();
         toast("Musik berhasil dipasang (Siap diputar saat undangan dibuka)!");
@@ -950,12 +954,13 @@
       }
     };
 
-    // Preset Music Dropdown
+    // Preset Music Dropdown (Silent update - no sudden autoplay)
     const presetSelect = $("presetMusicSelect");
     if (presetSelect) {
       presetSelect.onchange = () => {
         const val = presetSelect.value;
         if (val) {
+          stopEditorAudio();
           activeDraft.data.music = {
             music: val,
             url: val,
@@ -965,15 +970,10 @@
           const musicInput = document.querySelector('[data-edit="music.music"]') || $("musicUrlInput");
           if (musicInput) musicInput.value = val;
           
-          const placeholder = $("upload-music").nextElementSibling;
+          const placeholder = $("musicUploadLabel") || $("upload-music")?.nextElementSibling;
           if (placeholder) placeholder.textContent = "Musik Terpasang: (Preset)";
 
-          if (previewAudio) {
-            previewAudio.pause();
-            previewAudio = null;
-          }
-          if (testBtn) testBtn.textContent = "▶ Putar Preview";
-          
+          updateAudioPlayerStatus("Lagu pilihan siap (Klik Putar Musik)");
           updatePreview();
           triggerAutoSave();
           toast("Musik pilihan terpasang!");
@@ -981,40 +981,93 @@
       };
     }
 
-    // Test Music Audio Player with Play / Pause toggle
+    // Direct Music URL input changes
+    const musicUrlField = $("musicUrlInput");
+    if (musicUrlField) {
+      musicUrlField.oninput = () => {
+        stopEditorAudio();
+        updateAudioPlayerStatus("Link musik diubah");
+      };
+    }
+
+    // Dedicated Editor Audio Player (Play & Stop controls)
     let previewAudio = null;
-    const testBtn = $("testMusicBtn");
-    if (testBtn) {
-      testBtn.onclick = () => {
+    const playBtn = $("playMusicBtn") || $("testMusicBtn");
+    const stopBtn = $("stopMusicBtn");
+    const statusEl = $("musicPlayerStatus");
+
+    function updateAudioPlayerStatus(text, isPlaying = false) {
+      if (statusEl) {
+        statusEl.textContent = text;
+        statusEl.style.color = isPlaying ? "#a3c285" : "#a0a0a0";
+      }
+      if (playBtn) {
+        playBtn.innerHTML = isPlaying ? "<span>⏸</span> Jeda Musik" : "<span>▶</span> Putar Musik";
+      }
+    }
+
+    function stopEditorAudio() {
+      if (previewAudio) {
+        previewAudio.pause();
+        previewAudio.currentTime = 0;
+      }
+      // Also notify preview iframe to stop any sound
+      const iframe = $("previewFrame");
+      if (iframe && iframe.contentWindow) {
+        try {
+          iframe.contentWindow.postMessage({ type: "STOP_AUDIO" }, "*");
+        } catch (e) {}
+      }
+      updateAudioPlayerStatus("Musik dihentikan", false);
+    }
+
+    if (playBtn) {
+      playBtn.onclick = () => {
         const m = activeDraft.data.music;
-        const musicUrl = typeof m === 'string' ? m : (m?.music || m?.url || m?.src || "");
+        let musicUrl = typeof m === 'string' ? m : (m?.music || m?.url || m?.src || "");
+        if (musicUrl && musicUrl.includes("mixkit.co")) {
+          musicUrl = "/assets/audio/romantic-wedding.mp3";
+          activeDraft.data.music = { music: musicUrl, url: musicUrl, src: musicUrl };
+        }
         if (!musicUrl) {
           return toast("Pilih atau masukkan link musik terlebih dahulu");
         }
 
         if (previewAudio && !previewAudio.paused) {
           previewAudio.pause();
-          testBtn.textContent = "▶ Putar Preview";
+          updateAudioPlayerStatus("Musik dijeda", false);
           toast("Preview musik dijeda");
         } else {
           if (!previewAudio || previewAudio.src !== musicUrl) {
-            if (previewAudio) previewAudio.pause();
+            if (previewAudio) {
+              previewAudio.pause();
+              previewAudio.currentTime = 0;
+            }
             previewAudio = new Audio(musicUrl);
-            previewAudio.onended = () => { if (testBtn) testBtn.textContent = "▶ Putar Preview"; };
+            previewAudio.loop = true;
+            previewAudio.volume = 0.8;
             previewAudio.onerror = (err) => {
               console.error("Audio playback error:", err);
-              if (testBtn) testBtn.textContent = "▶ Putar Preview";
-              toast("Gagal memutar audio, periksa tautan/format file.");
+              updateAudioPlayerStatus("Gagal memutar audio", false);
+              toast("Gagal memutar audio, periksa tautan file.");
             };
           }
           previewAudio.play().then(() => {
-            testBtn.textContent = "⏸ Jeda Preview";
+            updateAudioPlayerStatus("Sedang memutar preview...", true);
             toast("Memutar preview musik...");
           }).catch(err => {
             console.error("Audio play error:", err);
+            updateAudioPlayerStatus("Gagal memutar audio", false);
             toast("Gagal memutar audio: " + err.message);
           });
         }
+      };
+    }
+
+    if (stopBtn) {
+      stopBtn.onclick = () => {
+        stopEditorAudio();
+        toast("Musik editor dihentikan");
       };
     }
   }

@@ -359,9 +359,10 @@
     }
   };
 
-  // Resume music on user touch/tap after invitation has been opened
+  // Resume music on user touch/tap after invitation has been opened (standalone view only)
   const tryResumePendingMusic = () => {
-    if (opened && music && music.src && !musicOn) {
+    if (window.parent && window.parent !== window.self) return;
+    if (window.__pendingMusicAutoplay && opened && music && music.src && !musicOn) {
       music.play().then(() => {
         musicOn = true;
         window.__pendingMusicAutoplay = false;

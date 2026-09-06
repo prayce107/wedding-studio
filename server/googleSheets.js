@@ -7,7 +7,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Service account credentials path
-const CREDENTIALS_PATH = path.join(__dirname, 'credentials.json');
+const possibleCredentialPaths = [
+  path.join(__dirname, 'credentials.json'),
+  path.join(process.cwd(), 'server', 'credentials.json'),
+  path.join(process.cwd(), 'credentials.json')
+];
+const CREDENTIALS_PATH = possibleCredentialPaths.find(p => fs.existsSync(p)) || path.join(__dirname, 'credentials.json');
 
 // Google Spreadsheet ID
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID || '1j8ljUx_W0RM98I49Czw5sV2DPVlSwAEQyf1eaCtazhs';
@@ -49,9 +54,10 @@ class GoogleSheetsDB {
       }
     }
 
-    if (!authConfig && fs.existsSync(CREDENTIALS_PATH)) {
+    const foundPath = possibleCredentialPaths.find(p => fs.existsSync(p));
+    if (!authConfig && foundPath) {
       authConfig = {
-        keyFile: CREDENTIALS_PATH,
+        keyFile: foundPath,
         scopes: ['https://www.googleapis.com/auth/spreadsheets'],
       };
     }

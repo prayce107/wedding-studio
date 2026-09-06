@@ -105,18 +105,14 @@
       setText(dom, "giftTitle", gift.giftTitle);
       setText(dom, "giftIntro", gift.giftIntro);
 
-      const heroSrc = general.photoHero || (galleryData.album?.[0]?.src || "");
-      const groomSrc = couple.groomPhoto || (galleryData.album?.[1]?.src || "");
-      const brideSrc = couple.bridePhoto || (galleryData.album?.[2]?.src || "");
-
       const coverPhoto = dom.getElementById("coverPhoto");
-      if (coverPhoto) coverPhoto.src = heroSrc;
+      if (coverPhoto && general.photoHero) coverPhoto.src = safeUrl(general.photoHero);
       const heroPhoto = dom.getElementById("heroPhoto");
-      if (heroPhoto) heroPhoto.src = heroSrc;
+      if (heroPhoto && general.photoHero) heroPhoto.src = safeUrl(general.photoHero);
       const groomPhoto = dom.getElementById("groomPhoto");
-      if (groomPhoto) groomPhoto.src = groomSrc;
+      if (groomPhoto && couple.groomPhoto) groomPhoto.src = safeUrl(couple.groomPhoto);
       const bridePhoto = dom.getElementById("bridePhoto");
-      if (bridePhoto) bridePhoto.src = brideSrc;
+      if (bridePhoto && couple.bridePhoto) bridePhoto.src = safeUrl(couple.bridePhoto);
 
       const urlParams = new URLSearchParams(window.location.search);
       const guestName = urlParams.get("to");
@@ -297,6 +293,36 @@
         giftGrid.querySelectorAll("[data-copy]").forEach(btn => {
           btn.addEventListener("click", () => window.TemplateScript?.copyText(btn.dataset.copy, "Nomor rekening disalin"));
         });
+      }
+
+      // Audio Source Update
+      const music = dom.getElementById("music");
+      if (music) {
+        const musicSrc = typeof data.music === 'string' ? data.music : (data.music?.music || data.music?.url || data.music?.src || data.music?.audio || "");
+        if (musicSrc) {
+          const currentSrc = music.getAttribute("data-current-src");
+          if (currentSrc !== musicSrc) {
+            music.setAttribute("data-current-src", musicSrc);
+            music.src = safeUrl(musicSrc);
+            music.load();
+
+            // Only autoplay if invitation is already opened (welcome screen removed)
+            const isOpened = !dom.getElementById("welcome") || dom.body.classList.contains("invitation-open") || window.__invitationOpened === true;
+            if (isOpened) {
+              const playPromise = music.play();
+              if (playPromise) {
+                playPromise.then(() => {
+                  const musicBtn = dom.getElementById("musicBtn");
+                  if (musicBtn) musicBtn.textContent = "❚❚";
+                }).catch(() => {});
+              }
+            }
+          }
+        } else {
+          music.removeAttribute("src");
+          music.removeAttribute("data-current-src");
+          music.load();
+        }
       }
 
       dom.title = `${general.name1 || "Wedding"} & ${general.name2 || ""} — Undangan Pernikahan`;

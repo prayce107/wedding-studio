@@ -16,14 +16,40 @@
   --green: #59664c;
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; background: var(--bg); }
-body { margin: 0; background: var(--bg); color: var(--cream); font-family: "DM Sans", sans-serif; overflow-x: hidden; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+html {
+  scroll-behavior: smooth;
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--cream);
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
 body.lock { overflow: hidden; }
-button, input, textarea, select { font: inherit; }
+button, input, textarea, select {
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
 button { cursor: pointer; }
 a { text-decoration: none; color: inherit; }
-img { display: block; max-width: 100%; }
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
 ::selection { background: var(--gold); color: #160d08; }
 button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, a:focus-visible {
   outline: 2px solid var(--gold2);
@@ -71,10 +97,15 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   position: fixed;
   inset: 0;
   z-index: 1000;
+  min-height: 100vh;
+  min-height: 100dvh;
   min-height: 100svh;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   display: grid;
   place-items: center;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   background: radial-gradient(circle at 50% 15%, #a46a3d55, transparent 31%), radial-gradient(circle at 50% 100%, #d49d531f, transparent 40%), #0b0806;
   transition: opacity .9s var(--ease), visibility .9s;
   isolation: isolate;

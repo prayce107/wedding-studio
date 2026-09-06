@@ -18,23 +18,30 @@
   --transition: all 0.4s var(--ease);
 }
 
-* {
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
   scroll-behavior: smooth;
   background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text-light);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Cinzel', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 body.lock {
@@ -179,10 +186,15 @@ img {
   position: fixed;
   inset: 0;
   z-index: 10000;
+  min-height: 100vh;
+  min-height: 100dvh;
   min-height: 100svh;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   background: var(--bg-gradient);
   transition: opacity 1.2s var(--ease), visibility 1.2s;
   overflow: hidden;

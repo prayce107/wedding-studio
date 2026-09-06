@@ -15,20 +15,40 @@
   --radius:28px;
 }
 
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;background:var(--page-bg)}
-body{
-  margin:0;
-  color:var(--ink);
-  background:var(--page-bg);
-  font-family:"DM Sans",sans-serif;
-  overflow-x:hidden;
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
-body.locked{overflow:hidden}
-button,input,textarea,select{font:inherit}
-button,a{cursor:pointer}
-a{text-decoration:none;color:inherit}
-img{display:block;max-width:100%}
+html {
+  scroll-behavior: smooth;
+  background: var(--page-bg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--page-bg);
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+body.locked { overflow: hidden; }
+button, input, textarea, select {
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+button, a { cursor: pointer; }
+a { text-decoration: none; color: inherit; }
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{
   outline:2px solid var(--primary);
   outline-offset:3px;
@@ -58,16 +78,21 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 
 .welcome{
   position:fixed;inset:0;z-index:1000;display:grid;place-items:center;
-  padding:24px 16px;background:
+  min-height:100vh;min-height:100dvh;
+  height:100vh;height:100dvh;
+  padding:24px 16px;
+  padding: max(24px, env(safe-area-inset-top, 24px)) max(16px, env(safe-area-inset-right, 16px)) max(24px, env(safe-area-inset-bottom, 24px)) max(16px, env(safe-area-inset-left, 16px));
+  background:
   linear-gradient(rgba(248,250,245,.74),rgba(248,250,245,.93)),
   radial-gradient(circle at 50% 0%,#dbe8f7,transparent 45%);
   transition:opacity .75s ease,visibility .75s ease,transform .9s ease;
 }
 .welcome.closing{opacity:0;visibility:hidden;transform:scale(1.03);pointer-events:none}
 .welcome-card{
-  width:min(430px,100%);min-height:min(760px,92vh);position:relative;overflow:hidden;
+  width:min(430px,100%);min-height:min(760px,92vh);min-height:min(760px,92dvh);position:relative;overflow:hidden;
   border:1px solid rgba(255,255,255,.85);border-radius:36px;
-  background:rgba(255,255,255,.78);backdrop-filter:blur(14px);
+  background:rgba(255,255,255,.78);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   box-shadow:0 35px 100px rgba(51,73,104,.20);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:48px 28px 34px;

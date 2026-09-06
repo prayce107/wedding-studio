@@ -12,33 +12,48 @@
     }
   };
 
+  const getIdb = () => {
+    return window.idbStore || (window.storageService && window.storageService.idb) || null;
+  };
+
   const publishService = {
     async saveDraft(slug, invitation) {
       const token = getToken();
-      if (!token) {
-        // Allow offline/local draft saving without forcing login block
+      const idb = getIdb();
+
+      // 1. Always save to high-capacity IndexedDB first (no 5MB quota limit)
+      if (idb && invitation && invitation.data) {
         try {
-          if (invitation && invitation.data) {
-            localStorage.setItem('invitation_cache_' + slug, JSON.stringify(invitation.data));
-            localStorage.setItem('invitation_meta_' + slug, JSON.stringify({
-              slug,
-              templateId: invitation.templateId || "luxury-gold",
-              title: invitation.data?.general?.name1 ? `${invitation.data.general.name1} & ${invitation.data.general.name2}` : slug,
-              updatedAt: new Date().toISOString()
-            }));
-          }
-          return { success: true, offline: true };
-        } catch (e) {
-          return { success: false };
+          await idb.set('invitation_cache_' + slug, invitation.data);
+          await idb.set('invitation_meta_' + slug, {
+            slug,
+            templateId: invitation.templateId || "luxury-gold",
+            title: invitation.data?.general?.name1 ? `${invitation.data.general.name1} & ${invitation.data.general.name2}` : slug,
+            updatedAt: new Date().toISOString()
+          });
+        } catch (idbErr) {
+          console.warn('IndexedDB save warning:', idbErr);
         }
       }
 
-      // Cache locally for instant 0ms offline availability
+      // 2. Safely attempt LocalStorage caching (wrapped so QuotaExceededError is non-fatal)
       try {
-        if (invitation.data) {
+        if (invitation && invitation.data) {
           localStorage.setItem('invitation_cache_' + slug, JSON.stringify(invitation.data));
+          localStorage.setItem('invitation_meta_' + slug, JSON.stringify({
+            slug,
+            templateId: invitation.templateId || "luxury-gold",
+            title: invitation.data?.general?.name1 ? `${invitation.data.general.name1} & ${invitation.data.general.name2}` : slug,
+            updatedAt: new Date().toISOString()
+          }));
         }
-      } catch (e) {}
+      } catch (lsErr) {
+        console.warn('LocalStorage quota notice (IndexedDB is handling large payload):', lsErr);
+      }
+
+      if (!token) {
+        return { success: true, offline: true };
+      }
 
       const all = await this.listAll();
       const existing = all.find(i => i.slug === slug);
@@ -55,7 +70,7 @@
           body: JSON.stringify({
             title: title,
             content: invitation.data,
-            status: "active", // Always lifetime active
+            status: "active",
             slug: slug
           })
         });
@@ -99,8 +114,14 @@
     
     async publish(slug, invitation) {
       const token = getToken();
+      const idb = getIdb();
 
-      // Cache locally
+      // Cache locally in IndexedDB & LocalStorage
+      if (idb && invitation && invitation.data) {
+        try {
+          await idb.set('invitation_cache_' + slug, invitation.data);
+        } catch (e) {}
+      }
       try {
         if (invitation.data) {
           localStorage.setItem('invitation_cache_' + slug, JSON.stringify(invitation.data));
@@ -146,16 +167,29 @@
     },
     
     async getDraft(slug) {
-      // 1. Try local cache first for instant load
+      const idb = getIdb();
       let cachedContent = null;
       let cachedMeta = null;
-      try {
-        const c = localStorage.getItem('invitation_cache_' + slug);
-        if (c) cachedContent = JSON.parse(c);
-        const m = localStorage.getItem('invitation_meta_' + slug);
-        if (m) cachedMeta = JSON.parse(m);
-      } catch (e) {}
 
+      // 1. Try IndexedDB first (high-capacity, uncompressed photos)
+      if (idb) {
+        try {
+          cachedContent = await idb.get('invitation_cache_' + slug);
+          cachedMeta = await idb.get('invitation_meta_' + slug);
+        } catch (e) {}
+      }
+
+      // 2. Try LocalStorage fallback
+      if (!cachedContent) {
+        try {
+          const c = localStorage.getItem('invitation_cache_' + slug);
+          if (c) cachedContent = JSON.parse(c);
+          const m = localStorage.getItem('invitation_meta_' + slug);
+          if (m) cachedMeta = JSON.parse(m);
+        } catch (e) {}
+      }
+
+      // 3. Try Remote Server API
       try {
         const all = await this.listAll();
         const item = all.find(i => i.slug === slug);
@@ -166,6 +200,9 @@
            if (detailRes.ok) {
               const detail = await detailRes.json();
               const content = detail.content || cachedContent || {};
+              if (idb) {
+                try { await idb.set('invitation_cache_' + slug, content); } catch (e) {}
+              }
               try {
                 localStorage.setItem('invitation_cache_' + slug, JSON.stringify(content));
               } catch (e) {}
@@ -194,6 +231,13 @@
     },
     
     async deleteDraft(slug) {
+      const idb = getIdb();
+      if (idb) {
+        try {
+          await idb.del('invitation_cache_' + slug);
+          await idb.del('invitation_meta_' + slug);
+        } catch (e) {}
+      }
       try {
         localStorage.removeItem('invitation_cache_' + slug);
         localStorage.removeItem('invitation_meta_' + slug);

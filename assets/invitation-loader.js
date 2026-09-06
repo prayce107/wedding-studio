@@ -37,16 +37,47 @@
     }
   }
 
+  async function getIdbData(key) {
+    if (typeof window === 'undefined' || !window.indexedDB) return null;
+    return new Promise((resolve) => {
+      try {
+        const req = indexedDB.open('wedding_lab_db', 1);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains('invitations_store')) {
+            db.createObjectStore('invitations_store');
+          }
+        };
+        req.onsuccess = () => {
+          const db = req.result;
+          const tx = db.transaction('invitations_store', 'readonly');
+          const store = tx.objectStore('invitations_store');
+          const getReq = store.get(key);
+          getReq.onsuccess = () => resolve(getReq.result || null);
+          getReq.onerror = () => resolve(null);
+        };
+        req.onerror = () => resolve(null);
+      } catch (e) {
+        resolve(null);
+      }
+    });
+  }
+
   async function loadLiveInvitation() {
     if (!slug) return;
 
-    // 1. Instant Zero-Delay Cache Load (SWR Strategy)
+    // 1. Instant Zero-Delay Cache Load (IndexedDB + LocalStorage SWR Strategy)
     try {
-      const cached = localStorage.getItem('invitation_cache_' + slug);
-      if (cached) {
-        const cachedData = JSON.parse(cached);
-        if (cachedData) {
-          renderData(cachedData);
+      const idbData = await getIdbData('invitation_cache_' + slug);
+      if (idbData) {
+        renderData(idbData);
+      } else {
+        const cached = localStorage.getItem('invitation_cache_' + slug);
+        if (cached) {
+          const cachedData = JSON.parse(cached);
+          if (cachedData) {
+            renderData(cachedData);
+          }
         }
       }
     } catch (e) {}

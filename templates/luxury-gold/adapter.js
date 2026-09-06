@@ -46,15 +46,21 @@
       // 4. Photos (Hero, Groom, Bride)
       const heroPhoto = dom.getElementById("heroPhoto");
       if (heroPhoto) {
-        heroPhoto.src = data.general.photoHero || (data.gallery.album[0]?.src || "");
+        if (data.general && data.general.photoHero) {
+          heroPhoto.src = safeUrl(data.general.photoHero);
+        }
       }
       const groomPhoto = dom.getElementById("groomPhoto");
       if (groomPhoto) {
-        groomPhoto.src = data.couple.groomPhoto || (data.gallery.album[1]?.src || "");
+        if (data.couple && data.couple.groomPhoto) {
+          groomPhoto.src = safeUrl(data.couple.groomPhoto);
+        }
       }
       const bridePhoto = dom.getElementById("bridePhoto");
       if (bridePhoto) {
-        bridePhoto.src = data.couple.bridePhoto || (data.gallery.album[2]?.src || "");
+        if (data.couple && data.couple.bridePhoto) {
+          bridePhoto.src = safeUrl(data.couple.bridePhoto);
+        }
       }
 
       // 5. Event Details
@@ -344,17 +350,15 @@
             music.src = safeUrl(musicSrc);
             music.load();
 
-            // If invitation is already opened, attempt autoplay
-            if (window.__pendingMusicAutoplay || dom.body.classList.contains("invitation-open") || window.__invitationOpened) {
+            // Only autoplay if invitation is already opened (cover already removed)
+            const isOpened = dom.body.classList.contains("invitation-open") || window.__invitationOpened === true;
+            if (isOpened) {
               const playPromise = music.play();
               if (playPromise) {
                 playPromise.then(() => {
-                  window.__pendingMusicAutoplay = false;
                   const musicBtn = dom.getElementById("musicBtn");
                   if (musicBtn) musicBtn.textContent = "♫";
-                }).catch(() => {
-                  window.__pendingMusicAutoplay = true;
-                });
+                }).catch(() => {});
               }
             }
           }

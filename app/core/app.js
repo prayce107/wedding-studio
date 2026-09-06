@@ -803,21 +803,15 @@
   function setupUploadHandlers() {
     // Cover Hero
     $("upload-hero").onchange = async e => {
-      console.log("upload-hero change event fired");
       const file = e.target.files[0];
-      if (!file) {
-        console.log("No file selected for cover");
-        return;
-      }
+      if (!file) return;
       
       const placeholder = $("upload-hero").nextElementSibling;
       if (placeholder) placeholder.textContent = "Mengunggah: " + file.name;
       
-      console.log("Cover file selected:", file.name, "size:", file.size, "type:", file.type);
       toast("Mengunggah foto cover...");
       try {
-        const url = await window.storageService.uploadFile(file);
-        console.log("Cover file successfully read as Data URL, length:", url.length);
+        const url = await window.storageService.uploadFile(file, { maxDimension: 1200, quality: 0.8 });
         
         if (!activeDraft.data.general) activeDraft.data.general = {};
         activeDraft.data.general.photoHero = url;
@@ -826,10 +820,8 @@
         $("preview-hero").classList.remove("hidden");
         
         updatePreview();
-        triggerOpenInvitation();
         triggerAutoSave();
         toast("Foto cover terpasang!");
-        console.log("Cover file applied and draft saved.");
       } catch (err) {
         console.error("Cover upload failed:", err);
         toast("Upload cover gagal: " + err.message);
@@ -838,21 +830,15 @@
 
     // Groom Photo
     $("upload-groom").onchange = async e => {
-      console.log("upload-groom change event fired");
       const file = e.target.files[0];
-      if (!file) {
-        console.log("No file selected for groom");
-        return;
-      }
+      if (!file) return;
       
       const placeholder = $("upload-groom").nextElementSibling;
       if (placeholder) placeholder.textContent = "Mengunggah: " + file.name;
       
-      console.log("Groom file selected:", file.name, "size:", file.size, "type:", file.type);
       toast("Mengunggah foto pria...");
       try {
-        const url = await window.storageService.uploadFile(file);
-        console.log("Groom file successfully read as Data URL, length:", url.length);
+        const url = await window.storageService.uploadFile(file, { maxDimension: 900, quality: 0.8 });
         
         if (!activeDraft.data.couple) activeDraft.data.couple = {};
         activeDraft.data.couple.groomPhoto = url;
@@ -861,10 +847,8 @@
         $("preview-groom").classList.remove("hidden");
         
         updatePreview();
-        triggerOpenInvitation();
         triggerAutoSave();
         toast("Foto pria terpasang!");
-        console.log("Groom file applied and draft saved.");
       } catch (err) {
         console.error("Groom upload failed:", err);
         toast("Upload foto pria gagal: " + err.message);
@@ -873,21 +857,15 @@
 
     // Bride Photo
     $("upload-bride").onchange = async e => {
-      console.log("upload-bride change event fired");
       const file = e.target.files[0];
-      if (!file) {
-        console.log("No file selected for bride");
-        return;
-      }
+      if (!file) return;
       
       const placeholder = $("upload-bride").nextElementSibling;
       if (placeholder) placeholder.textContent = "Mengunggah: " + file.name;
       
-      console.log("Bride file selected:", file.name, "size:", file.size, "type:", file.type);
       toast("Mengunggah foto wanita...");
       try {
-        const url = await window.storageService.uploadFile(file);
-        console.log("Bride file successfully read as Data URL, length:", url.length);
+        const url = await window.storageService.uploadFile(file, { maxDimension: 900, quality: 0.8 });
         
         if (!activeDraft.data.couple) activeDraft.data.couple = {};
         activeDraft.data.couple.bridePhoto = url;
@@ -896,10 +874,8 @@
         $("preview-bride").classList.remove("hidden");
         
         updatePreview();
-        triggerOpenInvitation();
         triggerAutoSave();
         toast("Foto wanita terpasang!");
-        console.log("Bride file applied and draft saved.");
       } catch (err) {
         console.error("Bride upload failed:", err);
         toast("Upload foto wanita gagal: " + err.message);
@@ -908,25 +884,19 @@
 
     // Album Upload (Multi)
     $("upload-album").onchange = async e => {
-      console.log("upload-album change event fired");
       const files = Array.from(e.target.files);
-      if (!files.length) {
-        console.log("No files selected for gallery");
-        return;
-      }
+      if (!files.length) return;
       
       const placeholder = $("upload-album").nextElementSibling;
       if (placeholder) placeholder.textContent = `Mengunggah ${files.length} foto...`;
       
-      console.log("Gallery files count:", files.length);
       toast(`Mengunggah ${files.length} foto album...`);
       try {
         if (!activeDraft.data.gallery) activeDraft.data.gallery = {};
         if (!activeDraft.data.gallery.album) activeDraft.data.gallery.album = [];
         
         for (const f of files) {
-          console.log("Reading gallery file:", f.name, "size:", f.size);
-          const url = await window.storageService.uploadFile(f);
+          const url = await window.storageService.uploadFile(f, { maxDimension: 1200, quality: 0.78 });
           activeDraft.data.gallery.album.push({
             src: url,
             caption: f.name.replace(/\.[^/.]+$/, "")
@@ -935,30 +905,22 @@
         
         renderAlbumList();
         updatePreview();
-        triggerOpenInvitation();
         triggerAutoSave();
         toast("Foto ditambahkan ke album!");
-        console.log("Gallery files added and draft saved.");
       } catch (err) {
         console.error("Gallery upload failed:", err);
         toast("Sebagian foto gagal diunggah: " + err.message);
       }
     };
 
-    // Music Audio Upload
+    // Music Audio Upload (Silent update - no sudden autoplay)
     $("upload-music").onchange = async e => {
-      console.log("upload-music change event fired");
       const file = e.target.files[0];
-      if (!file) {
-        console.log("No audio file selected");
-        return;
-      }
+      if (!file) return;
       
-      console.log("Audio file selected:", file.name, "size:", file.size, "type:", file.type);
       toast("Mengunggah file musik...");
       try {
         const url = await window.storageService.uploadFile(file);
-        console.log("Audio file successfully uploaded, length:", url.length);
         
         activeDraft.data.music = {
           music: url,
@@ -976,13 +938,12 @@
         if (previewAudio) {
           previewAudio.pause();
           previewAudio = null;
-          if (testBtn) testBtn.textContent = "▶ Play";
         }
+        if (testBtn) testBtn.textContent = "▶ Putar Preview";
 
         updatePreview();
-        triggerOpenInvitation();
         triggerAutoSave();
-        toast("Musik berhasil dipasang!");
+        toast("Musik berhasil dipasang (Siap diputar saat undangan dibuka)!");
       } catch (err) {
         console.error("Audio upload failed:", err);
         toast("Lagu gagal diunggah: " + err.message);
@@ -1010,18 +971,17 @@
           if (previewAudio) {
             previewAudio.pause();
             previewAudio = null;
-            if (testBtn) testBtn.textContent = "▶ Play";
           }
+          if (testBtn) testBtn.textContent = "▶ Putar Preview";
           
           updatePreview();
-          triggerOpenInvitation();
           triggerAutoSave();
           toast("Musik pilihan terpasang!");
         }
       };
     }
 
-    // Test Music Audio Player
+    // Test Music Audio Player with Play / Pause toggle
     let previewAudio = null;
     const testBtn = $("testMusicBtn");
     if (testBtn) {
@@ -1034,21 +994,21 @@
 
         if (previewAudio && !previewAudio.paused) {
           previewAudio.pause();
-          testBtn.textContent = "▶ Play";
-          toast("Musik dijeda");
+          testBtn.textContent = "▶ Putar Preview";
+          toast("Preview musik dijeda");
         } else {
           if (!previewAudio || previewAudio.src !== musicUrl) {
             if (previewAudio) previewAudio.pause();
             previewAudio = new Audio(musicUrl);
-            previewAudio.onended = () => { testBtn.textContent = "▶ Play"; };
+            previewAudio.onended = () => { if (testBtn) testBtn.textContent = "▶ Putar Preview"; };
             previewAudio.onerror = (err) => {
               console.error("Audio playback error:", err);
-              testBtn.textContent = "▶ Play";
-              toast("Gagal memutar audio, periksa format file.");
+              if (testBtn) testBtn.textContent = "▶ Putar Preview";
+              toast("Gagal memutar audio, periksa tautan/format file.");
             };
           }
           previewAudio.play().then(() => {
-            testBtn.textContent = "⏸ Pause";
+            testBtn.textContent = "⏸ Jeda Preview";
             toast("Memutar preview musik...");
           }).catch(err => {
             console.error("Audio play error:", err);

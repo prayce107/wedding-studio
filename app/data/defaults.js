@@ -72,7 +72,9 @@ const UniversalDefaults = {
     videoUrl: "" // YouTube Embed / MP4 URL
   },
   music: {
-    music: "https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3"
+    music: "https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3",
+    url: "https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3",
+    src: "https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3"
   },
   guestBook: {
     guestTitle: "Ucapan & Doa",

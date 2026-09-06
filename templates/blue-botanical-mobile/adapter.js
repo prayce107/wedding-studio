@@ -162,10 +162,31 @@
 
       const music = dom.getElementById("music");
       if (music) {
-        const src = musicData.music || "";
-        if (src) music.src = safeUrl(src);
-        else {
+        const src = typeof musicData === 'string' ? musicData : (musicData.music || musicData.url || musicData.src || musicData.audio || "");
+        if (src) {
+          const currentSrc = music.getAttribute("data-current-src");
+          if (currentSrc !== src) {
+            music.setAttribute("data-current-src", src);
+            music.src = safeUrl(src);
+            music.load();
+
+            // If invitation is already opened, attempt autoplay
+            if (window.__pendingMusicAutoplay || !dom.body.classList.contains("locked") || window.__invitationOpened) {
+              const playPromise = music.play();
+              if (playPromise) {
+                playPromise.then(() => {
+                  window.__pendingMusicAutoplay = false;
+                  const musicBtn = dom.getElementById("musicBtn");
+                  if (musicBtn) musicBtn.textContent = "❚❚";
+                }).catch(() => {
+                  window.__pendingMusicAutoplay = true;
+                });
+              }
+            }
+          }
+        } else {
           music.removeAttribute("src");
+          music.removeAttribute("data-current-src");
           music.load();
         }
       }

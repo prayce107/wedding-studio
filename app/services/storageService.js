@@ -22,7 +22,7 @@
     async uploadFile(file) {
       if (!file) throw new Error("Tidak ada file yang dipilih");
 
-      // 1. Try uploading to backend / Cloudinary CDN
+      // 1. Try uploading to backend / Cloudinary CDN / Local Uploads
       try {
         const token = getToken();
         const formData = new FormData();
@@ -33,11 +33,19 @@
           headers['Authorization'] = `Bearer ${token}`;
         }
 
-        const res = await fetch('/api/upload', {
+        let res = await fetch('/api/upload', {
           method: 'POST',
           headers: headers,
           body: formData
         });
+
+        if (!res.ok) {
+          // Fallback to public upload endpoint if /api/upload was restricted
+          res = await fetch('/api/public/upload', {
+            method: 'POST',
+            body: formData
+          });
+        }
 
         if (res.ok) {
           const data = await res.json();
@@ -46,7 +54,7 @@
           }
         }
       } catch (apiErr) {
-        console.warn("Cloudinary direct upload notice, falling back to local compression:", apiErr);
+        console.warn("Direct server upload notice, falling back to local processing:", apiErr);
       }
 
       // 2. Client-side Image compression fallback

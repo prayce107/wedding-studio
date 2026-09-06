@@ -8,15 +8,18 @@ cloudinary.config({
 });
 
 class CloudinaryDB {
-  uploadFile(fileBuffer, resourceType = 'auto') {
+  uploadFile(fileBuffer, resourceType = 'auto', originalFilename = '') {
     return new Promise((resolve, reject) => {
+      const isAudio = resourceType === 'audio' || resourceType === 'video' || /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(originalFilename);
+      
       const options = {
-        resource_type: resourceType,
+        resource_type: isAudio ? 'video' : (resourceType === 'image' ? 'image' : 'auto'),
         folder: 'wedding_assets',
       };
 
-      // If image, enable progressive loading & webp auto format
-      if (resourceType === 'image' || resourceType === 'auto') {
+      if (isAudio) {
+        options.format = 'mp3';
+      } else if (resourceType === 'image' || resourceType === 'auto') {
         options.quality = 'auto:good';
         options.fetch_format = 'auto';
       }
@@ -25,7 +28,12 @@ class CloudinaryDB {
         options,
         (error, result) => {
           if (result && result.secure_url) {
-            resolve(result.secure_url);
+            let finalUrl = result.secure_url;
+            // If audio file and doesn't end with .mp3, ensure extension for HTML5 audio MIME compatibility
+            if (isAudio && !finalUrl.match(/\.(mp3|wav|ogg|m4a)$/i)) {
+              finalUrl = `${finalUrl}.mp3`;
+            }
+            resolve(finalUrl);
           } else {
             console.error('Cloudinary upload error:', error);
             reject(error || new Error('Upload to Cloudinary failed'));

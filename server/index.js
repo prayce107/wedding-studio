@@ -5,7 +5,7 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import db from './db.js';
-import { authenticateToken, requireAdmin, generateToken } from './auth.js';
+import { authenticateToken, requireAdmin, generateToken, optionalAuth } from './auth.js';
 import bcrypt from 'bcryptjs';
 import os from 'os';
 import googleSheetsDB from './googleSheets.js';
@@ -75,24 +75,50 @@ const upload = multer({
   }
 });
 
-// File Upload Route (Authenticated for builder uploads)
-app.post('/api/upload', authenticateToken, upload.single('file'), async (req, res) => {
+// Upload processor with Cloudinary CDN and automatic local fallback
+async function processUpload(file) {
+  let resourceType = 'auto';
+  const isAudio = file.mimetype.startsWith('audio/') || /\.(mp3|wav|ogg|m4a|aac)$/i.test(file.originalname);
+  const isVideo = file.mimetype.startsWith('video/') || /\.(mp4|webm|mov)$/i.test(file.originalname);
+  const isImage = file.mimetype.startsWith('image/') || /\.(jpe?g|png|webp|gif|svg)$/i.test(file.originalname);
+
+  if (isAudio || isVideo) {
+    resourceType = 'video';
+  } else if (isImage) {
+    resourceType = 'image';
+  }
+
+  // 1. Try Cloudinary upload
+  try {
+    const fileUrl = await cloudinaryDB.uploadFile(file.buffer, resourceType, file.originalname);
+    if (fileUrl) {
+      return fileUrl;
+    }
+  } catch (cloudinaryErr) {
+    console.warn('Cloudinary upload fallback to local storage:', cloudinaryErr.message);
+  }
+
+  // 2. Fallback to saving file locally in uploadsDir
+  const ext = path.extname(file.originalname) || (isAudio ? '.mp3' : (isImage ? '.jpg' : '.bin'));
+  const safeBaseName = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
+  const localFileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}-${safeBaseName}${ext}`;
+  const localFilePath = path.join(uploadsDir, localFileName);
+
+  fs.writeFileSync(localFilePath, file.buffer);
+  return `/uploads/${localFileName}`;
+}
+
+// File Upload Route (Builder uploads with optional auth)
+app.post('/api/upload', optionalAuth, upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'Tidak ada file yang diunggah.' });
   }
   try {
-    let resourceType = 'auto';
-    if (req.file.mimetype.startsWith('audio/') || req.file.mimetype.startsWith('video/')) {
-      resourceType = 'video';
-    } else if (req.file.mimetype.startsWith('image/')) {
-      resourceType = 'image';
-    }
-
-    const fileUrl = await cloudinaryDB.uploadFile(req.file.buffer, resourceType);
+    const fileUrl = await processUpload(req.file);
     res.json({ url: fileUrl, success: true });
   } catch (error) {
-    console.error('Cloudinary Upload Error:', error);
-    res.status(500).json({ message: 'Gagal mengunggah file ke cloud storage.', error: error.message });
+    console.error('Upload Error:', error);
+    res.status(500).json({ message: 'Gagal mengunggah file.', error: error.message });
   }
 });
 
@@ -102,17 +128,10 @@ app.post('/api/public/upload', upload.single('file'), async (req, res) => {
     return res.status(400).json({ message: 'Tidak ada file yang diunggah.' });
   }
   try {
-    let resourceType = 'auto';
-    if (req.file.mimetype.startsWith('audio/') || req.file.mimetype.startsWith('video/')) {
-      resourceType = 'video';
-    } else if (req.file.mimetype.startsWith('image/')) {
-      resourceType = 'image';
-    }
-
-    const fileUrl = await cloudinaryDB.uploadFile(req.file.buffer, resourceType);
+    const fileUrl = await processUpload(req.file);
     res.json({ url: fileUrl, success: true });
   } catch (error) {
-    console.error('Cloudinary Public Upload Error:', error);
+    console.error('Public Upload Error:', error);
     res.status(500).json({ message: 'Gagal mengunggah bukti transfer.', error: error.message });
   }
 });
@@ -431,7 +450,9 @@ app.post('/api/invitations', authenticateToken, async (req, res) => {
       videoUrl: ""
     },
     music: {
-      music: ""
+      music: "https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3",
+      url: "https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3",
+      src: "https://assets.mixkit.co/music/preview/mixkit-romantic-moment-wedding-tune-493.mp3"
     },
     guestBook: {
       guestTitle: "Ucapan & Doa",

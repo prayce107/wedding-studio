@@ -64,6 +64,10 @@
       return acc[part];
     }, obj);
     target[last] = value;
+    if (path === "music.music" && target) {
+      target.url = value;
+      target.src = value;
+    }
   }
 
   // Clone Helper
@@ -696,10 +700,20 @@
       $("preview-bride").classList.remove("hidden");
     }
     
-    // Populate music file label if exists
-    if (activeDraft.data.music && activeDraft.data.music.music) {
-      const placeholder = $("upload-music").nextElementSibling;
-      if (placeholder) placeholder.textContent = "Musik Terpasang: (Lagu Simpanan)";
+    // Populate music file label & input if exists
+    const musicData = activeDraft.data.music;
+    const currentMusicUrl = typeof musicData === 'string' ? musicData : (musicData?.music || musicData?.url || musicData?.src || "");
+    const musicInput = document.querySelector('[data-edit="music.music"]') || $("musicUrlInput");
+    if (musicInput && currentMusicUrl) {
+      musicInput.value = currentMusicUrl;
+    }
+    const musicPlaceholder = $("upload-music")?.nextElementSibling;
+    if (musicPlaceholder) {
+      if (currentMusicUrl) {
+        musicPlaceholder.textContent = "Musik Terpasang: (Lagu Simpanan)";
+      } else {
+        musicPlaceholder.textContent = "Pilih file musik MP3 / Audio...";
+      }
     }
 
     // Set active Frame & Animation selected values
@@ -941,25 +955,34 @@
       }
       
       console.log("Audio file selected:", file.name, "size:", file.size, "type:", file.type);
-      toast("Mengunggah lagu MP3 ke Cloud CDN...");
+      toast("Mengunggah file musik...");
       try {
         const url = await window.storageService.uploadFile(file);
         console.log("Audio file successfully uploaded, length:", url.length);
         
-        if (!activeDraft.data.music) activeDraft.data.music = {};
-        activeDraft.data.music.music = url;
+        activeDraft.data.music = {
+          music: url,
+          url: url,
+          src: url
+        };
         
-        const musicInput = document.querySelector('[data-edit="music.music"]');
+        const musicInput = document.querySelector('[data-edit="music.music"]') || $("musicUrlInput");
         if (musicInput) musicInput.value = url;
         
         const placeholder = $("upload-music").nextElementSibling;
         if (placeholder) placeholder.textContent = "Musik Terpasang: " + file.name;
         
+        // Stop current test player if running
+        if (previewAudio) {
+          previewAudio.pause();
+          previewAudio = null;
+          if (testBtn) testBtn.textContent = "▶ Play";
+        }
+
         updatePreview();
         triggerOpenInvitation();
         triggerAutoSave();
-        toast("Musik MP3 terpasang!");
-        console.log("Audio file applied and draft saved.");
+        toast("Musik berhasil dipasang!");
       } catch (err) {
         console.error("Audio upload failed:", err);
         toast("Lagu gagal diunggah: " + err.message);
@@ -972,16 +995,28 @@
       presetSelect.onchange = () => {
         const val = presetSelect.value;
         if (val) {
-          if (!activeDraft.data.music) activeDraft.data.music = {};
-          activeDraft.data.music.music = val;
+          activeDraft.data.music = {
+            music: val,
+            url: val,
+            src: val
+          };
           
-          const musicInput = document.querySelector('[data-edit="music.music"]');
+          const musicInput = document.querySelector('[data-edit="music.music"]') || $("musicUrlInput");
           if (musicInput) musicInput.value = val;
+          
+          const placeholder = $("upload-music").nextElementSibling;
+          if (placeholder) placeholder.textContent = "Musik Terpasang: (Preset)";
+
+          if (previewAudio) {
+            previewAudio.pause();
+            previewAudio = null;
+            if (testBtn) testBtn.textContent = "▶ Play";
+          }
           
           updatePreview();
           triggerOpenInvitation();
           triggerAutoSave();
-          toast("Musik romantis dipilih!");
+          toast("Musik pilihan terpasang!");
         }
       };
     }
@@ -991,7 +1026,8 @@
     const testBtn = $("testMusicBtn");
     if (testBtn) {
       testBtn.onclick = () => {
-        const musicUrl = (activeDraft.data.music && activeDraft.data.music.music) || "";
+        const m = activeDraft.data.music;
+        const musicUrl = typeof m === 'string' ? m : (m?.music || m?.url || m?.src || "");
         if (!musicUrl) {
           return toast("Pilih atau masukkan link musik terlebih dahulu");
         }
@@ -1002,13 +1038,20 @@
           toast("Musik dijeda");
         } else {
           if (!previewAudio || previewAudio.src !== musicUrl) {
+            if (previewAudio) previewAudio.pause();
             previewAudio = new Audio(musicUrl);
             previewAudio.onended = () => { testBtn.textContent = "▶ Play"; };
+            previewAudio.onerror = (err) => {
+              console.error("Audio playback error:", err);
+              testBtn.textContent = "▶ Play";
+              toast("Gagal memutar audio, periksa format file.");
+            };
           }
           previewAudio.play().then(() => {
             testBtn.textContent = "⏸ Pause";
             toast("Memutar preview musik...");
           }).catch(err => {
+            console.error("Audio play error:", err);
             toast("Gagal memutar audio: " + err.message);
           });
         }

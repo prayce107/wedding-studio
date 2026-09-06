@@ -360,13 +360,33 @@
   };
 
   // Resume music on any user touch/tap if pending
-  document.addEventListener("click", () => {
-    if (opened && window.__pendingMusicAutoplay && music && music.src && !musicOn) {
+  const tryResumePendingMusic = () => {
+    if ((opened || window.__pendingMusicAutoplay) && music && music.src && !musicOn) {
       music.play().then(() => {
         musicOn = true;
         window.__pendingMusicAutoplay = false;
         if (musicBtn) musicBtn.textContent = "♫";
       }).catch(() => {});
     }
-  }, { passive: true });
+  };
+
+  document.addEventListener("click", tryResumePendingMusic, { passive: true });
+  document.addEventListener("touchstart", tryResumePendingMusic, { passive: true });
+  document.addEventListener("pointerdown", tryResumePendingMusic, { passive: true });
+
+  // Sync music state listeners
+  if (music) {
+    music.addEventListener("play", () => {
+      musicOn = true;
+      if (musicBtn) musicBtn.textContent = "♫";
+    });
+    music.addEventListener("pause", () => {
+      musicOn = false;
+      if (musicBtn) musicBtn.textContent = "♪";
+    });
+    music.addEventListener("ended", () => {
+      musicOn = false;
+      if (musicBtn) musicBtn.textContent = "♪";
+    });
+  }
 })();

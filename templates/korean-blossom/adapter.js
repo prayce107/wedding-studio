@@ -326,13 +326,31 @@
       // 17. Audio Source Update
       const music = dom.getElementById("music");
       if (music) {
-        const musicSrc = data.music.music || "";
+        const musicSrc = typeof data.music === 'string' ? data.music : (data.music?.music || data.music?.url || data.music?.src || data.music?.audio || "");
         if (musicSrc) {
-          if (music.src !== musicSrc) {
+          const currentSrc = music.getAttribute("data-current-src");
+          if (currentSrc !== musicSrc) {
+            music.setAttribute("data-current-src", musicSrc);
             music.src = safeUrl(musicSrc);
+            music.load();
+
+            // If invitation is already opened, attempt autoplay
+            if (window.__pendingMusicAutoplay || dom.body.classList.contains("invitation-open") || window.__invitationOpened) {
+              const playPromise = music.play();
+              if (playPromise) {
+                playPromise.then(() => {
+                  window.__pendingMusicAutoplay = false;
+                  const musicBtn = dom.getElementById("musicBtn");
+                  if (musicBtn) musicBtn.textContent = "♫";
+                }).catch(() => {
+                  window.__pendingMusicAutoplay = true;
+                });
+              }
+            }
           }
         } else {
           music.removeAttribute("src");
+          music.removeAttribute("data-current-src");
           music.load();
         }
       }
